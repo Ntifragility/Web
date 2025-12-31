@@ -1,0 +1,47 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #000;
+}
+
+canvas {
+    display: block;
+}
+
+#ui {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    color: white;
+    font-family: serif;
+    pointer-events: none;
+    user-select: none;
+    z-index: 10;
+}
+
+h1 {
+    font-size: 4rem;
+    font-weight: 300;
+    margin: 0;
+    letter-spacing: 0.1em;
+}
+
+p {
+    font-size: 0.9rem;
+    letter-spacing: 0.3em;
+    opacity: 0.7;
+    margin-top: 5px;
+    font-family: sans-serif;
+    text-transform: uppercase;
+}
+
+#controls-hint {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    pointer-events: none;
+    z-index: 10;
+}
