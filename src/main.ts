@@ -39,12 +39,16 @@ if (heroElement && canvasContainer && navElement) {
                 // We are at the HERO section
                 canvasContainer.classList.remove('fade-out');
                 navElement.classList.add('hidden');
-                document.body.style.overflow = 'hidden';
+
+                // Enable 3D rotation only at the top
+                (canvasContainer as HTMLElement).style.pointerEvents = 'auto';
             } else {
                 // We have left the HERO section
                 canvasContainer.classList.add('fade-out');
                 navElement.classList.remove('hidden');
-                document.body.style.overflow = 'auto';
+
+                // Disable 3D rotation in content so it doesn't block scrolling/clicks
+                (canvasContainer as HTMLElement).style.pointerEvents = 'none';
             }
         });
     }, {

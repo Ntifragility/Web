@@ -74,7 +74,6 @@ export class HeroSection {
         // Add scroll logic
         const scrollBtn = section.querySelector('#scroll-btn');
         scrollBtn?.addEventListener('click', () => {
-            document.body.style.overflow = 'auto'; // Enable scrolling
             const aboutSection = document.getElementById('about');
             aboutSection?.scrollIntoView({ behavior: 'smooth' });
         });
