@@ -4,7 +4,6 @@
  * This is the bridge between the HTML file and the complex 3D logic (SceneManager).
  * Creates an object from the class SceneManager defined in SceneManager.ts.
  */
-
 import '@/styles/index.css'; // the web's background is defined in CSS
 import { SceneManager } from '@/SceneManager'; // Calls the class SceneManager (the complex 3D logic)
 
@@ -20,10 +19,37 @@ const sceneManagerMVwebsite = new SceneManager(container);
 sceneManagerMVwebsite.animate();
 
 // Initialize UI
-const navContainer = 'nav-container';
+const navContainerId = 'nav-container';
 const mainContent = 'main-content';
 
-new Navigation(navContainer);
+new Navigation(navContainerId);
 new HeroSection(mainContent);
 new IntroSection(mainContent);
 new ContentGrid(mainContent);
+
+// State Coordination via Scroll Observer
+const heroElement = document.getElementById('hero');
+const canvasContainer = document.getElementById('canvas-container');
+const navElement = document.getElementById(navContainerId);
+
+if (heroElement && canvasContainer && navElement) {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // We are at the HERO section
+                canvasContainer.classList.remove('fade-out');
+                navElement.classList.add('hidden');
+                document.body.style.overflow = 'hidden';
+            } else {
+                // We have left the HERO section
+                canvasContainer.classList.add('fade-out');
+                navElement.classList.remove('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }, {
+        threshold: 0.1
+    });
+
+    observer.observe(heroElement);
+}

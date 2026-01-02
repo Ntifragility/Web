@@ -22,13 +22,33 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+}
+
 body {
     margin: 0;
     background-color: var(--bg-color);
     color: var(--text-primary);
     font-family: var(--font-body);
     overflow: hidden;
-    /* Hide scrollbar and prevent scroll until explore */
+    /* Prevent scrolling until explore */
+}
+
+/* Hide scrollbar visually but keep snapping active */
+body::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+section {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
 }
 
 /* Three.js Canvas Container */
@@ -40,7 +60,12 @@ body {
     height: 100vh;
     z-index: 1;
     pointer-events: all;
-    /* Allow rotating the earth */
+    transition: opacity 1s ease-in-out;
+    /* Smooth transition */
+}
+
+#canvas-container.fade-out {
+    opacity: 0;
 }
 
 /* Main Content Wrapper - Scrolls over the fixed Earth */
@@ -82,6 +107,13 @@ a {
     border: 1px solid var(--glass-border);
 }
 
-/* UI Hardcoded elements removal:
-   We will re-implement #ui and #controls-hint dynamically or in new structure 
-*/
+#nav-container {
+    transition: opacity 0.25s ease;
+    z-index: 100;
+}
+
+/* Hidden class for navigation */
+#nav-container.hidden {
+    opacity: 0;
+    pointer-events: none;
+}

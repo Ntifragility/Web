@@ -20,6 +20,7 @@ export class ContentGrid {
     private render(): void {
         const section = document.createElement('section');
         section.id = 'content';
+        section.style.minHeight = '100vh';
         section.style.padding = 'var(--section-spacing) 2rem';
         section.style.maxWidth = 'var(--container-width)';
         section.style.margin = '0 auto';

@@ -17,6 +17,10 @@ export class IntroSection {
     private render(): void {
         const section = document.createElement('section');
         section.id = 'about';
+        section.style.minHeight = '100vh';
+        section.style.display = 'flex';
+        section.style.flexDirection = 'column';
+        section.style.justifyContent = 'center';
         section.style.padding = 'var(--section-spacing) 2rem';
         section.style.maxWidth = '800px';
         section.style.margin = '0 auto';
