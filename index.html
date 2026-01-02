@@ -8,12 +8,18 @@
 </head>
 
 <body>
+    <!-- Fixed 3D Background -->
+    <div id="canvas-container"></div>
+
     <div id="ui">
-        <h1>TERRA</h1>
-        <p>Planet Earth</p>
+        <p>Marco Villafuerte</p>
     </div>
-    <div id="controls-hint">
-        Click & Drag to Rotate &bull; Scroll to Zoom
+
+    <!-- Scrolling UI Layer -->
+    <div id="content-wrapper">
+        <!-- Components will be injected here by JS -->
+        <header id="nav-container"></header>
+        <main id="main-content"></main>
     </div>
 
     <script type="module" src="/src/main.ts"></script>

@@ -8,5 +8,22 @@
 import '@/styles/index.css'; // the web's background is defined in CSS
 import { SceneManager } from '@/SceneManager'; // Calls the class SceneManager (the complex 3D logic)
 
-const sceneManagerMVwebsite = new SceneManager(document.body);// Creates an object. Attaches the 3D canvas to the webpage
-sceneManagerMVwebsite.animate(); // Pushes the "Start" button (begins the animation, render loop, move the camera)
+// UI Components
+import { Navigation } from '@/components/UI/Navigation';
+import { HeroSection } from '@/components/UI/HeroSection';
+import { IntroSection } from '@/components/UI/IntroSection';
+import { ContentGrid } from '@/components/UI/ContentGrid';
+
+// Initialize 3D Scene
+const container = document.getElementById('canvas-container') as HTMLElement;
+const sceneManagerMVwebsite = new SceneManager(container);
+sceneManagerMVwebsite.animate();
+
+// Initialize UI
+const navContainer = 'nav-container';
+const mainContent = 'main-content';
+
+new Navigation(navContainer);
+new HeroSection(mainContent);
+new IntroSection(mainContent);
+new ContentGrid(mainContent);

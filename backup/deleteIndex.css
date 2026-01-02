@@ -27,8 +27,7 @@ body {
     background-color: var(--bg-color);
     color: var(--text-primary);
     font-family: var(--font-body);
-    overflow: hidden;
-    /* Hide scrollbar and prevent scroll until explore */
+    overflow-x: hidden;
 }
 
 /* Three.js Canvas Container */

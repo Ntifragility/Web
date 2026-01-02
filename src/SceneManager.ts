@@ -10,9 +10,9 @@
 
 import * as THREE from 'three'; // the 3D library three.js
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'; // the camera controls
-import { createGalaxy } from '@/components/Galaxy'; // the galaxy component
-import { createEarth } from '@/components/Earth'; // the earth component
-import { createAtmosphere } from '@/components/Atmosphere'; // the atmosphere component
+import { createGalaxy } from '@/components/3D/Galaxy'; // the galaxy component
+import { createEarth } from '@/components/3D/Earth'; // the earth component
+import { createAtmosphere } from '@/components/3D/Atmosphere'; // the atmosphere component
 
 /**
  * SceneManager orchestrates the 3D environment.
