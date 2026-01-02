@@ -48,7 +48,7 @@ export class HeroSection {
                     transition: all 0.3s ease;
                     border: 1px solid var(--glass-border);
                 ">
-                    Scroll to Explore
+                    Explore
                 </button>
                 <div style="animation: bounce 2s infinite;">
                     &#8595;

@@ -54,8 +54,8 @@ export class SceneManager {
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.05;
         this.controls.rotateSpeed = 0.5;
-        this.controls.minDistance = 1.5;
-        this.controls.maxDistance = 6;
+        this.controls.minDistance = isMobile ? 2.0 : 1.5;
+        this.controls.maxDistance = isMobile ? 5.0 : 6.0;
         this.controls.enablePan = false; // Primary fix for displacement/drifting
         this.controls.target.set(0, 0, 0); // Lock pivot to Earth center
 
@@ -89,6 +89,11 @@ export class SceneManager {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.position.z = isMobile ? 4.0 : 2.5; // Update distance on resize
         this.camera.updateProjectionMatrix();
+
+        // Update zoom limits on resize
+        this.controls.minDistance = isMobile ? 2.0 : 1.5;
+        this.controls.maxDistance = isMobile ? 5.0 : 6.0;
+
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
 

@@ -11,6 +11,7 @@ import { SceneManager } from '@/SceneManager'; // Calls the class SceneManager (
 import { Navigation } from '@/components/UI/Navigation';
 import { HeroSection } from '@/components/UI/HeroSection';
 import { IntroSection } from '@/components/UI/IntroSection';
+import { ToolsGrid } from '@/components/UI/ToolsGrid';
 import { ContentGrid } from '@/components/UI/ContentGrid';
 
 // Initialize 3D Scene
@@ -25,6 +26,7 @@ const mainContent = 'main-content';
 new Navigation(navContainerId);
 new HeroSection(mainContent);
 new IntroSection(mainContent);
+new ToolsGrid(mainContent);
 new ContentGrid(mainContent);
 
 // State Coordination via Scroll Observer

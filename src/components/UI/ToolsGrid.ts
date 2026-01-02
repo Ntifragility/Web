@@ -1,14 +1,13 @@
 /**
- * @file ContentGrid.ts
- * @description Renders the grid of content items (videos, blogs, etc.) with filtering capabilities.
- * Fetches data from the content layer and creates interactive cards.
+ * @file ToolsGrid.ts
+ * @description Renders a grid of tools with categories and links.
  */
 
-import { contentData, ContentType } from '@/data/content';
+import { toolsData, ToolCategory } from '@/data/tools';
 
-export class ContentGrid {
+export class ToolsGrid {
     private container: HTMLElement;
-    private currentFilter: ContentType | 'all' = 'all';
+    private currentFilter: ToolCategory | 'all' = 'all';
 
     constructor(containerId: string) {
         const element = document.getElementById(containerId);
@@ -19,7 +18,7 @@ export class ContentGrid {
 
     private render(): void {
         const section = document.createElement('section');
-        section.id = 'content';
+        section.id = 'tools';
         section.style.minHeight = '100vh';
         section.style.padding = 'var(--section-spacing) 2rem';
         section.style.maxWidth = 'var(--container-width)';
@@ -30,31 +29,27 @@ export class ContentGrid {
         header.style.textAlign = 'center';
         header.style.marginBottom = '3rem';
         header.innerHTML = `
-            <h2 style="font-size: 3rem; margin-bottom: 2rem;">Content</h2>
-            <div id="filter-container" style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+            <h2 style="font-size: 3rem; margin-bottom: 2rem;">Tools</h2>
+            <div id="tool-filter-container" style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
                 ${this.createFilterButton('all', 'All')}
-                ${this.createFilterButton('video', 'Videos')}
-                ${this.createFilterButton('podcast', 'Podcasts')}
-                ${this.createFilterButton('blog', 'Articles')}
-                ${this.createFilterButton('talk', 'Talks')}
+                ${this.createFilterButton('development', 'Development')}
+                ${this.createFilterButton('design', 'Design')}
+                ${this.createFilterButton('productivity', 'Productivity')}
             </div>
         `;
 
         // 2. Grid Container
         const grid = document.createElement('div');
-        grid.id = 'content-grid';
+        grid.id = 'tools-grid';
         grid.style.display = 'grid';
-        grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(300px, 1fr))';
+        grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(250px, 1fr))';
         grid.style.gap = '2rem';
 
         section.appendChild(header);
         section.appendChild(grid);
         this.container.appendChild(section);
 
-        // 3. Initial Render of Items
         this.renderItems(grid);
-
-        // 4. Bind Events
         this.bindEvents(section);
     }
 
@@ -72,14 +67,14 @@ export class ContentGrid {
             text-transform: uppercase;
             letter-spacing: 0.05em;
         `;
-        return `<button data-filter="${type}" class="filter-btn" style="${style}">${label}</button>`;
+        return `<button data-filter="${type}" class="tool-filter-btn" style="${style}">${label}</button>`;
     }
 
     private renderItems(grid: HTMLElement): void {
-        grid.innerHTML = ''; // Clear existing
+        grid.innerHTML = '';
         const filtered = this.currentFilter === 'all'
-            ? contentData
-            : contentData.filter(item => item.type === this.currentFilter);
+            ? toolsData
+            : toolsData.filter(item => item.category === this.currentFilter);
 
         // Observer for scroll reveal
         const observer = new IntersectionObserver((entries) => {
@@ -95,7 +90,8 @@ export class ContentGrid {
             const card = document.createElement('article');
             card.className = 'glass reveal-item'; // Added reveal-item
             card.style.borderRadius = '15px';
-            card.style.overflow = 'hidden';
+            card.style.padding = '2rem';
+            card.style.textAlign = 'center';
             card.style.cursor = 'pointer';
 
             // Sequential Row Stagger:
@@ -107,39 +103,26 @@ export class ContentGrid {
 
             card.innerHTML = `
                 <div class="card-inner">
-                    <div style="height: 200px; background-image: url('${item.thumbnail}'); background-size: cover; background-position: center; position: relative;">
-                        <div style="
-                            position: absolute; 
-                            top: 10px; 
-                            right: 10px; 
-                            background: rgba(0,0,0,0.7); 
-                            padding: 0.2rem 0.5rem; 
-                            border-radius: 5px; 
-                            font-size: 0.7rem; 
-                            text-transform: uppercase;">
-                            ${item.type}
-                        </div>
-                    </div>
-                    <div style="padding: 1.5rem;">
-                        <div style="color: #909190; font-size: 0.8rem; margin-bottom: 0.5rem;">${item.source} &bull; ${item.date}</div>
-                        <h3 style="font-size: 1.2rem; line-height: 1.4; margin-bottom: 1rem;">${item.title}</h3>
-                    </div>
+                    <img src="${item.icon}" alt="${item.title}" style="width: 64px; height: 64px; margin-bottom: 1.5rem; border-radius: 12px;">
+                    <h3 style="margin-bottom: 0.5rem;">${item.title}</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-secondary);">${item.description}</p>
                 </div>
             `;
+
+            card.onclick = () => window.open(item.url, '_blank');
             grid.appendChild(card);
             observer.observe(card); // Start observing
         });
     }
 
     private bindEvents(section: HTMLElement): void {
-        const buttons = section.querySelectorAll('.filter-btn');
+        const buttons = section.querySelectorAll('.tool-filter-btn');
         buttons.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const target = e.target as HTMLElement;
-                const type = target.dataset.filter as ContentType | 'all';
+                const type = target.dataset.filter as ToolCategory | 'all';
                 this.currentFilter = type;
 
-                // Update UI of buttons
                 buttons.forEach(b => {
                     const el = b as HTMLElement;
                     if (el.dataset.filter === type) {
@@ -151,8 +134,7 @@ export class ContentGrid {
                     }
                 });
 
-                // Re-render grid
-                const grid = section.querySelector('#content-grid') as HTMLElement;
+                const grid = section.querySelector('#tools-grid') as HTMLElement;
                 this.renderItems(grid);
             });
         });

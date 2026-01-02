@@ -21,10 +21,11 @@ export class IntroSection {
         section.style.display = 'flex';
         section.style.flexDirection = 'column';
         section.style.justifyContent = 'center';
+        section.style.alignItems = 'center'; // Center children horizontally
         section.style.padding = 'var(--section-spacing) 2rem';
-        section.style.maxWidth = '800px';
+        section.style.maxWidth = '900px'; // Slightly wider for centered look
         section.style.margin = '0 auto';
-        section.style.textAlign = 'left';
+        section.style.textAlign = 'center';
 
         // Glassmorphic card for the intro
         section.className = 'glass';
@@ -49,7 +50,7 @@ export class IntroSection {
                 I am a Software Engineer passionate about 3D data visualization and building immersive web experiences. 
                 I bridge the gap between complex technical systems and engaging user interfaces.
             </p>
-            <div style="display: flex; gap: 1rem;">
+            <div style="display: flex; gap: 1rem; justify-content: center; width: 100%;">
                 <button style="
                     padding: 1rem 2rem;
                     background: var(--accent-blue);
