@@ -37,8 +37,9 @@ export class SceneManager {
         this.scene = new THREE.Scene();
 
         // 2. Setup the Eyes (Camera)
+        const isMobile = window.innerWidth < 768;
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.camera.position.z = 2.5;
+        this.camera.position.z = isMobile ? 4.0 : 2.5; // Responsive distance
 
         // 3. Setup the Engine (Renderer)
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -54,11 +55,12 @@ export class SceneManager {
         this.controls.dampingFactor = 0.05;
         this.controls.rotateSpeed = 0.5;
         this.controls.minDistance = 1.5;
-        this.controls.maxDistance = 5;
+        this.controls.maxDistance = 6;
+        this.controls.enablePan = false; // Primary fix for displacement/drifting
+        this.controls.target.set(0, 0, 0); // Lock pivot to Earth center
 
         // 5. Build the Universe (Components)
         createGalaxy(this.scene); // Calling from Galaxy.ts
-
         this.earthGroup = new THREE.Group();
         this.earthGroup.rotation.z = 23.5 * Math.PI / 180; // Tilt
         this.scene.add(this.earthGroup);
@@ -83,7 +85,9 @@ export class SceneManager {
     }
 
     onWindowResize() { // handles window resize
+        const isMobile = window.innerWidth < 768;
         this.camera.aspect = window.innerWidth / window.innerHeight;
+        this.camera.position.z = isMobile ? 4.0 : 2.5; // Update distance on resize
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
