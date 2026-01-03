@@ -54,7 +54,7 @@ export class Navigation {
 
             <!-- Mobile Sidebar -->
             <div id="sidebar-overlay" class="sidebar-overlay"></div>
-            <div id="sidebar" class="sidebar glass">
+            <div id="sidebar" class="sidebar">
                 <ul>
                     <li><a href="#about" class="sidebar-link" style="font-family: var(--font-heading);">About</a></li>
                     <li><a href="#tools" class="sidebar-link" style="font-family: var(--font-heading);">Tools</a></li>

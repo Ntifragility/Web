@@ -103,7 +103,9 @@ export class ToolsGrid {
 
             card.innerHTML = `
                 <div class="card-inner">
-                    <img src="${item.icon}" alt="${item.title}" style="width: 64px; height: 64px; margin-bottom: 1.5rem; border-radius: 12px;">
+                    <div class="card-image-wrap" style="width: 64px; height: 64px; margin: 0 auto 1.5rem; border-radius: 12px;">
+                        <img src="${item.icon}" alt="${item.title}" style="width: 100%; height: 100%; object-fit: contain;">
+                    </div>
                     <h3 style="margin-bottom: 0.5rem;">${item.title}</h3>
                     <p style="font-size: 0.9rem; color: var(--text-secondary);">${item.description}</p>
                 </div>

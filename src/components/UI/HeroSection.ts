@@ -28,43 +28,43 @@ export class HeroSection {
         section.style.position = 'relative';
 
         section.innerHTML = `         
-            <div style="
+            <button id="scroll-btn" style="
                 position: absolute;
-                bottom: 40px;
+                bottom: 50px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                gap: 0.5rem;
-                opacity: 0.8;
+                gap: 0.8rem;
+                cursor: pointer;
+                transition: opacity 0.3s ease;
+                background: none;
+                border: none;
+                padding: 0;
+                outline: none;
+                color: inherit;
             ">
-                <button id="scroll-btn" class="glass" style="
-                    padding: 0.8rem 1.5rem;
-                    border-radius: 30px;
-                    color: var(--text-primary);
-                    font-size: 0.8rem;
-                    letter-spacing: 0.1em;
-                    text-transform: uppercase;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    border: 1px solid var(--glass-border);
-                ">
-                    Explore
-                </button>
-                <div style="animation: bounce 2s infinite;">
-                    &#8595;
+
+                <div class="chevron-container" style="animation: bounce 2s infinite ease-in-out;">
+                    <svg width="50" height="25" viewBox="0 0 40 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 2L20 18L38 2" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </div>
-            </div>
+            </button>
 
             <style>
+                #scroll-btn {
+                    opacity: 0.6;
+                }
                 #scroll-btn:hover {
-                    background: rgba(255, 255, 255, 0.1);
-                    transform: translateY(-2px);
-                    border-color: var(--accent-blue);
+                    opacity: 1;
+                }
+                #scroll-btn:hover .chevron-container {
+                    animation-play-state: paused;
+                    transform: translateY(5px);
                 }
                 @keyframes bounce {
-                    0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-                    40% {transform: translateY(-10px);}
-                    60% {transform: translateY(-5px);}
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(10px); }
                 }
             </style>
         `;

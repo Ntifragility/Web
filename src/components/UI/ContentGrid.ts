@@ -93,10 +93,12 @@ export class ContentGrid {
 
         filtered.forEach((item, index) => {
             const card = document.createElement('article');
-            card.className = 'glass reveal-item'; // Added reveal-item
-            card.style.borderRadius = '15px';
+            card.className = 'reveal-item';
+            card.style.background = '#121212'; // Charcoal off-black
+            card.style.borderRadius = '20px'; // Increased for premium feel
             card.style.overflow = 'hidden';
             card.style.cursor = 'pointer';
+            card.style.border = '1px solid #1e1e1e'; // Subtle border
 
             // Sequential Row Stagger:
             // This ensures row N is mostly visible before row N+1 starts.
@@ -106,28 +108,62 @@ export class ContentGrid {
             card.style.transitionDelay = `${delay}s`;
 
             card.innerHTML = `
-                <div class="card-inner">
-                    <div style="height: 200px; background-image: url('${item.thumbnail}'); background-size: cover; background-position: center; position: relative;">
-                        <div style="
-                            position: absolute; 
-                            top: 10px; 
-                            right: 10px; 
-                            background: rgba(0,0,0,0.7); 
-                            padding: 0.2rem 0.5rem; 
-                            border-radius: 5px; 
-                            font-size: 0.7rem; 
-                            text-transform: uppercase;">
-                            ${item.type}
-                        </div>
+                <div class="card-inner" style="padding: 12px; display: flex; flex-direction: column; height: 100%;">
+                    <!-- Framed Image Container (Cleaner) -->
+                    <div class="card-image-wrap" style="
+                        position: relative; 
+                        width: 100%; 
+                        height: 220px; 
+                        border-radius: 12px; 
+                        background: #000;
+                    ">
+                        <img src="${item.thumbnail}" alt="${item.title}" style="
+                            width: 100%; 
+                            height: 100%; 
+                            object-fit: cover;
+                            display: block;
+                        ">
                     </div>
-                    <div style="padding: 1.5rem;">
-                        <div style="color: #909190; font-size: 0.8rem; margin-bottom: 0.5rem;">${item.source} &bull; ${item.date}</div>
-                        <h3 style="font-size: 1.2rem; line-height: 1.4; margin-bottom: 1rem;">${item.title}</h3>
+                    
+                    <!-- Details & Metadata (Title First) -->
+                    <div style="padding: 1.5rem 0.5rem 0.8rem 0.5rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start;">
+                        <h3 style="
+                            font-size: 1.3rem; 
+                            line-height: 1.3; 
+                            margin: 0 0 0.8rem 0; 
+                            color: #fff;
+                            font-weight: 700;
+                            display: -webkit-box;
+                            -webkit-line-clamp: 2;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                        ">
+                            ${item.title}
+                        </h3>
+                        <div style="color: #888; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 0.8rem;">
+                            <span>${item.source} &bull; ${this.formatDate(item.date)}</span>
+                            <span style="
+                                color: var(--accent-blue); 
+                                font-size: 0.7rem; 
+                                font-weight: 700; 
+                                letter-spacing: 0.1em;
+                                text-transform: uppercase;">
+                                ${item.type}
+                            </span>
+                        </div>
                     </div>
                 </div>
             `;
             grid.appendChild(card);
             observer.observe(card); // Start observing
+        });
+    }
+
+    private formatDate(dateStr: string): string {
+        const date = new Date(dateStr);
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            year: 'numeric'
         });
     }
 
