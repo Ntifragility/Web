@@ -39,7 +39,8 @@ export class SceneManager {
         // 2. Setup the Eyes (Camera)
         const isMobile = window.innerWidth < 768;
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.camera.position.z = isMobile ? 4.0 : 2.5; // Responsive distance
+        // Responsive distance - Max distance for mobile
+        this.camera.position.z = isMobile ? 6.0 : 2.5;
 
         // 3. Setup the Engine (Renderer)
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -88,7 +89,8 @@ export class SceneManager {
     onWindowResize() { // handles window resize
         const isMobile = window.innerWidth < 768;
         this.camera.aspect = window.innerWidth / window.innerHeight;
-        this.camera.position.z = isMobile ? 3.0 : 2.5; // Update distance on resize
+        // Update distance on resize
+        this.camera.position.z = isMobile ? 6.0 : 2.5;
         this.camera.updateProjectionMatrix();
 
         // Update zoom limits (on resize)

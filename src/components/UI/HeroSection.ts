@@ -30,7 +30,7 @@ export class HeroSection {
         section.innerHTML = `         
             <button id="scroll-btn" style="
                 position: absolute;
-                bottom: 50px;
+                bottom: 65px; /* Scroll button position */
                 display: flex;
                 flex-direction: column;
                 align-items: center;

@@ -72,29 +72,83 @@ export class Navigation {
         const overlay = document.getElementById('sidebar-overlay');
         const links = document.querySelectorAll('.sidebar-link');
 
-        const toggleMenu = () => {
-            toggle?.classList.toggle('active');
-            sidebar?.classList.toggle('active');
-            overlay?.classList.toggle('active');
+        if (!toggle || !sidebar || !overlay) return;
 
-            // Prevent background scroll when sidebar is open
-            if (sidebar?.classList.contains('active')) {
-                document.body.style.overflow = 'hidden';
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+        const dragThreshold = 50; // Pixels to drag before closing
+
+        const openMenu = () => {
+            toggle.classList.add('active');
+            sidebar.classList.add('active');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            sidebar.style.transform = ''; // Clear any drag transforms
+        };
+
+        const closeMenu = () => {
+            toggle.classList.remove('active');
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            sidebar.style.transform = ''; // Clear any drag transforms
+        };
+
+        const toggleMenu = () => {
+            if (sidebar.classList.contains('active')) {
+                closeMenu();
             } else {
-                // Return to auto if not at the very top (controlled by IntersectionObserver anyway)
-                // but setting to auto here ensures it's unlocked when closing sidebar.
-                document.body.style.overflow = 'auto';
+                openMenu();
             }
         };
 
-        toggle?.addEventListener('click', toggleMenu);
-        overlay?.addEventListener('click', toggleMenu);
+        // Click handlers
+        toggle.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', closeMenu);
+        links.forEach(link => link.addEventListener('click', closeMenu));
 
-        links.forEach(link => {
-            link.addEventListener('click', () => {
-                // Close menu when a link is clicked
-                toggleMenu();
-            });
-        });
+        // Swipe/Drag to close logic
+        const startDrag = (x: number) => {
+            if (!sidebar.classList.contains('active')) return;
+            startX = x;
+            isDragging = true;
+            sidebar.style.transition = 'none'; // Instant feedback
+        };
+
+        const moveDrag = (x: number) => {
+            if (!isDragging) return;
+            currentX = x;
+            const deltaX = Math.max(0, currentX - startX); // Only drag to the right
+            sidebar.style.transform = `translateX(${deltaX}px)`;
+
+            // Fade out overlay slightly as we drag
+            const opacity = Math.max(0, 1 - (deltaX / 150));
+            overlay.style.opacity = opacity.toString();
+        };
+
+        const endDrag = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            sidebar.style.transition = ''; // Restore CSS transitions
+            overlay.style.opacity = ''; // Restore CSS transitions
+
+            const deltaX = currentX - startX;
+            if (deltaX > dragThreshold) {
+                closeMenu();
+            } else {
+                sidebar.style.transform = 'translateX(0)';
+            }
+        };
+
+        // Touch events
+        sidebar.addEventListener('touchstart', (e) => startDrag(e.touches[0].clientX), { passive: true });
+        window.addEventListener('touchmove', (e) => moveDrag(e.touches[0].clientX), { passive: false });
+        window.addEventListener('touchend', endDrag);
+
+        // Mouse events (Desktop testing)
+        sidebar.addEventListener('mousedown', (e) => startDrag(e.clientX));
+        window.addEventListener('mousemove', (e) => moveDrag(e.clientX));
+        window.addEventListener('mouseup', endDrag);
     }
 }

@@ -121,9 +121,9 @@ a {
 .reveal-item {
     opacity: 0;
     transform: translateY(50%);
-    /* FASTER REVEAL: 1.25s duration (50% faster than previous 2.5s) */
-    transition: opacity 1.25s ease-in-out,
-        transform 1.25s ease-in-out;
+    /* SNAPPY REVEAL: 0.8s duration for better mobile performance */
+    transition: opacity 0.8s ease-in-out,
+        transform 0.8s ease-in-out;
 }
 
 .reveal-item.revealed {
@@ -187,9 +187,9 @@ a {
 .sidebar {
     position: fixed;
     top: 0;
-    right: -240px;
+    right: -175px;
     /* Match width */
-    width: 140px;
+    width: 175px;
     /* Lateral navigation bar WIDTH */
     height: 100vh;
     z-index: 1000;

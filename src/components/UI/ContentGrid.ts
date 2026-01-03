@@ -104,7 +104,7 @@ export class ContentGrid {
             // This ensures row N is mostly visible before row N+1 starts.
             const rowIndex = Math.floor(index / 3);
             const colIndex = index % 3;
-            const delay = (rowIndex * 0.6) + (colIndex * 0.15);
+            const delay = (rowIndex * 0.25) + (colIndex * 0.1);
             card.style.transitionDelay = `${delay}s`;
 
             card.innerHTML = `
