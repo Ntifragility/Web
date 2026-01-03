@@ -1,8 +1,4 @@
-/**
- * @file Navigation.ts
- * @description Renders the sticky top navigation bar using the glassmorphism style.
- * Provides links to Home, Content, About, and Contact sections.
- */
+import { navigationData } from '@/data/navigation';
 
 export class Navigation {
     private container: HTMLElement;
@@ -15,6 +11,14 @@ export class Navigation {
     }
 
     private render(): void {
+        const desktopLinks = navigationData.links
+            .map(link => `<li><a href="${link.href}" style="font-size: 0.95rem; text-transform: none; letter-spacing: 0;">${link.label}</a></li>`)
+            .join('');
+
+        const mobileLinks = navigationData.links
+            .map(link => `<li><a href="${link.href}" class="sidebar-link" style="font-family: var(--font-heading);">${link.label}</a></li>`)
+            .join('');
+
         this.container.innerHTML = `
             <nav style="
                 display: flex;
@@ -28,7 +32,7 @@ export class Navigation {
                 z-index: 100;
             ">
                 <div class="logo" style="font-weight: 600; font-size: 1.4rem; letter-spacing: -0.02em; font-family: var(--font-heading);">
-                    Marco
+                    ${navigationData.logo}
                 </div>
                 
                 <!-- Desktop Menu -->
@@ -39,9 +43,7 @@ export class Navigation {
                     margin: 0;
                     padding: 0;
                 ">
-                    <li><a href="#about" style="font-size: 0.95rem; text-transform: none; letter-spacing: 0;">About</a></li>
-                    <li><a href="#tools" style="font-size: 0.95rem; text-transform: none; letter-spacing: 0;">Tools</a></li>
-                    <li><a href="#content" style="font-size: 0.95rem; text-transform: none; letter-spacing: 0;">Content</a></li>
+                    ${desktopLinks}
                 </ul>
 
                 <!-- Hamburger Button -->
@@ -56,9 +58,7 @@ export class Navigation {
             <div id="sidebar-overlay" class="sidebar-overlay"></div>
             <div id="sidebar" class="sidebar">
                 <ul>
-                    <li><a href="#about" class="sidebar-link" style="font-family: var(--font-heading);">About</a></li>
-                    <li><a href="#tools" class="sidebar-link" style="font-family: var(--font-heading);">Tools</a></li>
-                    <li><a href="#content" class="sidebar-link" style="font-family: var(--font-heading);">Content</a></li>
+                    ${mobileLinks}
                 </ul>
             </div>
         `;

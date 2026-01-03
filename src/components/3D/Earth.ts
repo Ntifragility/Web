@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-export function createEarth(scene: THREE.Group) {
-    const loader = new THREE.TextureLoader();
+export function createEarth(scene: THREE.Group, loadingManager?: THREE.LoadingManager) {
+    const loader = new THREE.TextureLoader(loadingManager);
     const TEXTURE_URL = 'https://unpkg.com/three-globe/example/img/earth-night.jpg';
     const BUMP_URL = 'https://unpkg.com/three-globe/example/img/earth-topology.png';
     const SPECULAR_URL = 'https://unpkg.com/three-globe/example/img/earth-water.png';

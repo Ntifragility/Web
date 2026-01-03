@@ -1,8 +1,4 @@
-/**
- * @file IntroSection.ts
- * @description Renders the 'About Me' section.
- * Provides a brief introduction with a dark background to contrast with the Hero.
- */
+import { introData } from '@/data/intro';
 
 export class IntroSection {
     private container: HTMLElement;
@@ -33,13 +29,29 @@ export class IntroSection {
         section.style.marginTop = '2rem'; // Space from hero
         section.style.background = 'rgba(10, 10, 15, 0.8)'; // Darker background
 
+        const buttonsHTML = introData.buttons.map(btn => `
+            <button class="intro-btn-${btn.primary ? 'primary' : 'secondary'}" style="
+                padding: 1rem 2rem;
+                background: ${btn.primary ? 'var(--accent-blue)' : 'transparent'};
+                color: ${btn.primary ? 'black' : 'var(--text-primary)'};
+                border: ${btn.primary ? 'none' : '1px solid var(--text-primary)'};
+                border-radius: 5px;
+                font-weight: bold;
+                cursor: pointer;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            ">
+                ${btn.label}
+            </button>
+        `).join('');
+
         section.innerHTML = `
             <h2 style="
                 font-size: 2.5rem; 
                 margin-bottom: 1.5rem; 
                 color: var(--accent-blue);
             ">
-                Hey, I'm Marco.
+                ${introData.title}
             </h2>
             <p style="
                 font-size: 1.1rem; 
@@ -47,39 +59,19 @@ export class IntroSection {
                 color: var(--text-secondary);
                 margin-bottom: 2rem;
             ">
-                I am a Software Engineer passionate about 3D data visualization and building immersive web experiences. 
-                I bridge the gap between complex technical systems and engaging user interfaces.
+                ${introData.bio}
             </p>
             <div style="display: flex; gap: 1rem; justify-content: center; width: 100%;">
-                <button style="
-                    padding: 1rem 2rem;
-                    background: var(--accent-blue);
-                    color: black;
-                    border: none;
-                    border-radius: 5px;
-                    font-weight: bold;
-                    cursor: pointer;
-                    text-transform: uppercase;
-                    letter-spacing: 0.05em;
-                ">
-                    Get in Touch
-                </button>
-                <button style="
-                    padding: 1rem 2rem;
-                    background: transparent;
-                    color: var(--text-primary);
-                    border: 1px solid var(--text-primary);
-                    border-radius: 5px;
-                    font-weight: bold;
-                    cursor: pointer;
-                    text-transform: uppercase;
-                    letter-spacing: 0.05em;
-                ">
-                    View Resume
-                </button>
+                ${buttonsHTML}
             </div>
         `;
 
         this.container.appendChild(section);
+
+        // Bind button events
+        const buttons = section.querySelectorAll('button');
+        buttons.forEach((btn, index) => {
+            btn.addEventListener('click', introData.buttons[index].onClick);
+        });
     }
 }

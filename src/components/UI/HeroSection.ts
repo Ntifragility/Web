@@ -1,9 +1,4 @@
-/**
- * @file HeroSection.ts
- * @description Renders the initial Hero section that overlays the 3D text.
- * Contains the main title, subtitle, and a scroll down indicator.
- * Designed to be 100vh height to showcase the 3D background.
- */
+import { heroData } from '@/data/hero';
 
 export class HeroSection {
     private container: HTMLElement;
@@ -74,7 +69,7 @@ export class HeroSection {
         // Add scroll logic
         const scrollBtn = section.querySelector('#scroll-btn');
         scrollBtn?.addEventListener('click', () => {
-            const aboutSection = document.getElementById('about');
+            const aboutSection = document.getElementById(heroData.scrollTargetId);
             aboutSection?.scrollIntoView({ behavior: 'smooth' });
         });
     }

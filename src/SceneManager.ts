@@ -32,17 +32,14 @@ export class SceneManager {
      * Initializes the 3D world.
      * @param canvasContainer The HTML element where the 3D canvas will be injected.
      */
-    constructor(canvasContainer: HTMLElement) { // constructor 
-        // 1. Initialize the Container (The "Void")
+    constructor(canvasContainer: HTMLElement) {
+        // 1. Initialize Core Components
         this.scene = new THREE.Scene();
 
-        // 2. Setup the Eyes (Camera)
         const isMobile = window.innerWidth < 768;
         this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-        // Responsive distance - Max distance for mobile
         this.camera.position.z = isMobile ? 6.0 : 2.5;
 
-        // 3. Setup the Engine (Renderer)
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.setPixelRatio(window.devicePixelRatio);
@@ -50,39 +47,57 @@ export class SceneManager {
         this.renderer.outputEncoding = THREE.sRGBEncoding;
         canvasContainer.appendChild(this.renderer.domElement);
 
-        // 4. Setup the Interactions (Controls)
+        // 2. Setup Loading Manager
+        const loadingManager = new THREE.LoadingManager();
+        const loaderElement = document.getElementById('loader');
+        const barElement = document.querySelector('.loader-bar') as HTMLElement;
+
+        loadingManager.onProgress = (_url, itemsLoaded, itemsTotal) => {
+            const progress = (itemsLoaded / itemsTotal) * 100;
+            if (barElement) barElement.style.width = `${progress}%`;
+        };
+
+        loadingManager.onLoad = () => {
+            if (loaderElement) {
+                setTimeout(() => {
+                    loaderElement.classList.add('hidden');
+                }, 500);
+            }
+        };
+
+        // 3. Setup Controls
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.05;
         this.controls.rotateSpeed = 0.5;
-        // Zoom at load (initial range)
         this.controls.minDistance = isMobile ? 4.0 : 2.0;
         this.controls.maxDistance = isMobile ? 6.0 : 5.0;
-        this.controls.enablePan = false; // Primary fix for displacement/drifting
-        this.controls.target.set(0, 0, 0); // Lock pivot to Earth center
+        this.controls.enablePan = false;
+        this.controls.target.set(0, 0, 0);
 
-        // 5. Build the Universe (Components)
-        createGalaxy(this.scene); // Calling from Galaxy.ts
+        // 4. Build Universe
+        createGalaxy(this.scene);
+
         this.earthGroup = new THREE.Group();
-        this.earthGroup.rotation.z = 23.5 * Math.PI / 180; // Tilt
+        this.earthGroup.rotation.z = 23.5 * Math.PI / 180;
         this.scene.add(this.earthGroup);
 
-        const earthObj = createEarth(this.earthGroup); // Calling from Earth.ts
+        const earthObj = createEarth(this.earthGroup, loadingManager);
         this.earth = earthObj.earth;
         this.clouds = earthObj.clouds;
 
-        const atmosphere = createAtmosphere(); // Calling from Atmosphere.ts
+        const atmosphere = createAtmosphere();
         this.scene.add(atmosphere);
 
-        // 6. Setup the Lighting
-        const sunLight = new THREE.DirectionalLight(0xffffff, 1.5); // Sun light 
-        sunLight.position.set(5, 3, 5); // Sun position
+        // 5. Setup Lighting
+        const sunLight = new THREE.DirectionalLight(0xffffff, 1.5);
+        sunLight.position.set(5, 3, 5);
         this.scene.add(sunLight);
 
-        const ambientLight = new THREE.AmbientLight(0x404040, 0.5); // Ambient light
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
         this.scene.add(ambientLight);
 
-        // 7. Setup the Events
+        // 6. Events
         window.addEventListener('resize', this.onWindowResize.bind(this));
     }
 

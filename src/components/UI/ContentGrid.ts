@@ -1,10 +1,4 @@
-/**
- * @file ContentGrid.ts
- * @description Renders the grid of content items (videos, blogs, etc.) with filtering capabilities.
- * Fetches data from the content layer and creates interactive cards.
- */
-
-import { contentData, ContentType } from '@/data/content';
+import { contentData, ContentType, contentSectionData } from '@/data/content';
 
 export class ContentGrid {
     private container: HTMLElement;
@@ -29,14 +23,15 @@ export class ContentGrid {
         const header = document.createElement('div');
         header.style.textAlign = 'center';
         header.style.marginBottom = '3rem';
+
+        const filterButtons = contentSectionData.filters
+            .map(f => this.createFilterButton(f.id as any, f.label))
+            .join('');
+
         header.innerHTML = `
-            <h2 style="font-size: 3rem; margin-bottom: 2rem;">Content</h2>
+            <h2 style="font-size: 3rem; margin-bottom: 2rem;">${contentSectionData.title}</h2>
             <div id="filter-container" style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
-                ${this.createFilterButton('all', 'All')}
-                ${this.createFilterButton('video', 'Videos')}
-                ${this.createFilterButton('podcast', 'Podcasts')}
-                ${this.createFilterButton('blog', 'Articles')}
-                ${this.createFilterButton('talk', 'Talks')}
+                ${filterButtons}
             </div>
         `;
 
@@ -106,6 +101,10 @@ export class ContentGrid {
             const colIndex = index % 3;
             const delay = (rowIndex * 0.25) + (colIndex * 0.1);
             card.style.transitionDelay = `${delay}s`;
+
+            card.onclick = () => {
+                window.open(item.url, '_blank');
+            };
 
             card.innerHTML = `
                 <div class="card-inner" style="padding: 12px; display: flex; flex-direction: column; height: 100%;">
