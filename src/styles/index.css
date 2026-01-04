@@ -2,10 +2,12 @@
 
 :root {
     /* Base Colors (Dark - Default) */
+    --accent-blue: #4D99FF;
+
     --bg-color: #050505;
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
-    --accent-blue: #4D99FF;
+    --headers-color: #ffffff;
     --accent-purple: #bd00ff;
 
     /*Back to Home button background in dark mode */
@@ -34,6 +36,7 @@
     --bg-color: #f8fafc;
     --text-primary: #0f172a;
     --text-secondary: #475569;
+    --headers-color: #0f172a;
 
     /*Back to Home button background in light mode */
     --glass-bg: rgba(255, 255, 255, 0.82);

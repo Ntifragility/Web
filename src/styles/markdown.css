@@ -1,4 +1,6 @@
-/* src/styles/markdown.css */
+/* src/styles/markdown.css 
+   Style only for Obsidian Markdown files
+*/
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
 
 .markdown-body {
@@ -11,7 +13,7 @@
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3 {
-    color: var(--accent-blue);
+    color: var(--headers-color);
     margin-top: 2.5rem;
     margin-bottom: 1rem;
     transition: var(--theme-transition);
@@ -81,11 +83,13 @@
    but ensures proper sizing for horizontal scrolling
 */
 .code-wrapper::-webkit-scrollbar {
-    height: 10px; /* Slightly taller for better usability */
+    height: 10px;
+    /* Slightly taller for better usability */
 }
 
 .code-wrapper::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.25); /* Darker track for code blocks */
+    background: rgba(0, 0, 0, 0.25);
+    /* Darker track for code blocks */
     border-radius: 10px;
     margin: 0 4px;
 }
@@ -190,8 +194,22 @@
 }
 
 .hljs-number,
-.hljs-literal {
+.hljs-literal,
+.hljs-variable,
+.hljs-template-variable {
     color: #fbbf24;
+}
+
+.hljs-meta,
+.hljs-selector-id,
+.hljs-selector-class {
+    color: #82AAFF;
+}
+
+.hljs-regexp,
+.hljs-symbol,
+.hljs-bullet {
+    color: #C3E88D;
 }
 
 /* Line Numbers Layout (matches Image 2) */
@@ -244,9 +262,16 @@ table.hljs-ln td {
 
 /* --- MATH & IMAGES --- */
 .katex-display {
-    padding: 1rem 0;
-    margin: 1rem 0;
+    padding: 1.5rem;
+    margin: 2rem 0;
     overflow-x: auto;
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: var(--theme-transition);
 }
 
 .markdown-body img {

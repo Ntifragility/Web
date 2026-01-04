@@ -84,7 +84,7 @@ export class MarkdownViewer {
             ">
                 <h1 style="font-size: 4rem; margin-bottom: 1rem; text-shadow: 0 4px 12px rgba(0,0,0,0.5);">${title}</h1>
                 <p style="font-size: 1.5rem; opacity: 0.9; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">${subtitle}</p>
-                ${date ? `<p style="margin-top: 1rem; color: var(--accent-blue); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">${date}</p>` : ''}
+                ${date ? `<p style="margin-top: 1rem;  font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">${date}</p>` : ''}
             </section>
         `;
     }
@@ -115,7 +115,7 @@ export class MarkdownViewer {
             ">
                 <a href="#" style="color: inherit; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Home</a>
                 <span>/</span>
-                <span style="color: var(--accent-blue); font-weight: 700;">${category}</span>
+                <span style="background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">${category}</span>
                 <span>/</span>
                 <span style="color: var(--text-primary); opacity: 0.8;">${title}</span>
             </div>

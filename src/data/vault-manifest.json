@@ -9,6 +9,15 @@
     "category": "Docker"
   },
   {
+    "id": "nema---armonicos-s1",
+    "title": "Obsidian Notes & Harmonics",
+    "subtitle": "Power Factor Analysis & Harmonic Distortion Calculations",
+    "date": "2025-11-08",
+    "image": "/vault-harmonics/img/NEMA-Armonicos-1.png",
+    "markdownPath": "/vault/ready/NEMA - ARMONICOS/S1.md",
+    "category": "NEMA - ARMONICOS"
+  },
+  {
     "id": "docker-problems-when-dockerizing",
     "title": "Problems when dockerizing",
     "subtitle": "",

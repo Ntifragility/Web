@@ -28,6 +28,7 @@ import json from 'highlight.js/lib/languages/json';
 import sql from 'highlight.js/lib/languages/sql';
 import cpp from 'highlight.js/lib/languages/cpp';
 import java from 'highlight.js/lib/languages/java';
+import matlab from 'highlight.js/lib/languages/matlab';
 import katex from 'katex';
 
 // Import Styles
@@ -46,6 +47,7 @@ hljs.registerLanguage('json', json);
 hljs.registerLanguage('sql', sql);
 hljs.registerLanguage('cpp', cpp);
 hljs.registerLanguage('java', java);
+hljs.registerLanguage('matlab', matlab);
 
 export interface ParsedPost {
     metadata: Record<string, string>;
