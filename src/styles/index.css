@@ -1,15 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
 :root {
-    /* Colors */
+    /* Base Colors (Dark - Default) */
     --bg-color: #050505;
     --text-primary: #ffffff;
     --text-secondary: rgba(255, 255, 255, 0.7);
     --accent-blue: #4D99FF;
-    /*progressive loading bar*/
     --accent-purple: #bd00ff;
     --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
+    --card-bg: #121212;
+    --card-border: #1e1e1e;
+    --detail-bg: #0a0a0a;
+    /*Header Background in dark mode */
+    --hero-overlay: rgba(0, 0, 0, 0.6);
+
+    /* Transitions */
+    --theme-transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
 
     /* Spacing */
     --section-spacing: 120px;
@@ -19,6 +26,74 @@
     --font-heading: 'Poppins', sans-serif;
     --font-body: 'Poppins', sans-serif;
 }
+
+/* Light Theme Overrides (Applied to .content-detail-view) */
+.light-theme {
+    --bg-color: #f8fafc;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --glass-bg: rgba(255, 255, 255, 0.82);
+    --glass-border: rgba(0, 0, 0, 0.12);
+    --card-bg: #ffffff;
+    --card-border: #e2e8f0;
+    --detail-bg: #ffffff;
+    /*Header Background in light mode */
+    --hero-overlay: rgba(255, 255, 255, 0.05);
+    /* Subtle light overlay */
+}
+
+/* Custom Theme Toggle (Pill Design) */
+.theme-toggle-wrap {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 2100;
+}
+
+.theme-toggle-btn {
+    width: 60px;
+    height: 32px;
+    background: #000;
+    border-radius: 20px;
+    padding: 4px;
+    cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    position: relative;
+    transition: background-color 0.3s ease;
+}
+
+.theme-toggle-btn .circle {
+    width: 24px;
+    height: 24px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.3s ease;
+    color: #000;
+}
+
+.dark-theme .theme-toggle-btn .circle {
+    transform: translateX(0);
+}
+
+.light-theme .theme-toggle-btn {
+    background: #e2e8f0;
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.light-theme .theme-toggle-btn .circle {
+    transform: translateX(28px);
+}
+
+.theme-toggle-btn .circle svg {
+    width: 14px;
+    height: 14px;
+}
+
 
 * {
     box-sizing: border-box;
@@ -34,7 +109,7 @@ body {
     background-color: var(--bg-color);
     color: var(--text-primary);
     font-family: var(--font-body);
-    /* overflow: hidden removed to allow mouse-wheel/touch scrolling from start */
+    transition: var(--theme-transition);
 }
 
 /* Hide scrollbar visually but keep snapping active */

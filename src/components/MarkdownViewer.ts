@@ -16,8 +16,14 @@ export class MarkdownViewer {
         this.container = container;
     }
 
+    /**
+     * Renders a complete markdown document page including hero banner, breadcrumbs, and content.
+     * This is the main entry point for displaying markdown files in the application.
+     * @param markdownPath - Path to the markdown file to render (e.g., 'ready/guides/setup.md')
+     * @returns Promise that resolves when rendering is complete
+     */
     public async render(markdownPath: string): Promise<void> {
-        this.container.innerHTML = '<div style="padding: 4rem; text-align: center; color: #888;">Loading content...</div>';
+        this.container.innerHTML = '<div style="padding: 4rem; text-align: center; color: var(--text-secondary);">Loading content...</div>';
 
         try {
             const { html, metadata } = await markdownParsing.fetchAndParse(markdownPath);
@@ -47,6 +53,13 @@ export class MarkdownViewer {
         }
     }
 
+    /**
+     * Creates a full-width hero banner (top of the page) for displaying markdown document headers.
+     * Features a large background image with overlay, title, subtitle, and optional date.
+     * Similar styling to ContentDetail component but generated from markdown metadata.
+     * @param metadata - Document metadata containing 'title', 'subtitle', 'image', and 'date' fields
+     * @returns HTML string with styled hero section (60vh tall with centered content)
+     */
     private buildHero(metadata: Record<string, string>): string {
         const title = metadata.title || 'Untitled';
         const subtitle = metadata.subtitle || '';
@@ -62,7 +75,7 @@ export class MarkdownViewer {
                 justify-content: center;
                 align-items: center;
                 text-align: center;
-                background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${image}');
+                background-image: linear-gradient(var(--hero-overlay), var(--hero-overlay)), url('${image}');
                 background-size: cover;
                 background-position: center;
                 width: 100%;
@@ -76,7 +89,15 @@ export class MarkdownViewer {
         `;
     }
 
-    private buildBreadcrumbs(metadata: Record<string, string>, path: string): string {
+    /**
+     * Generates an HTML breadcrumb navigation component for every markdown document.
+     * Creates a visual path showing: Home / Category / Title
+     * @param metadata - Document metadata object that may contain 'category' and 'title' fields
+     * @param path - File path of the markdown document (e.g., 'ready/guides/setup.md')
+     * @returns HTML string with styled breadcrumb navigation
+     */
+    private buildBreadcrumbs(metadata: Record<string, string>,
+        path: string): string {
         const category = metadata.category || (path.includes('ready/') ? path.split('ready/')[1].split('/')[0] : 'General');
         const title = metadata.title || path.split('/').pop()?.replace('.md', '') || 'Untitled';
 
@@ -84,7 +105,7 @@ export class MarkdownViewer {
             <div class="markdown-breadcrumbs" style="
                 padding: 1.5rem 2rem;
                 font-size: 0.85rem;
-                color: #888;
+                color: var(--text-secondary);
                 font-family: var(--font-heading);
                 text-transform: uppercase;
                 letter-spacing: 0.1em;
@@ -96,7 +117,7 @@ export class MarkdownViewer {
                 <span>/</span>
                 <span style="color: var(--accent-blue); font-weight: 700;">${category}</span>
                 <span>/</span>
-                <span style="color: #ccc;">${title}</span>
+                <span style="color: var(--text-primary); opacity: 0.8;">${title}</span>
             </div>
         `;
     }

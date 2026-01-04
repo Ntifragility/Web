@@ -6,6 +6,10 @@
  */
 import '@/styles/index.css'; // the web's background is defined in CSS
 import { SceneManager } from '@/SceneManager'; // Calls the class SceneManager (the complex 3D logic)
+import { themeDarkLight } from '@/services/ThemeDarkLight';
+
+// Scoped Theme Access
+(window as any).themeDarkLight = themeDarkLight;
 
 // UI Components
 import { Navigation } from '@/components/UI/Navigation';

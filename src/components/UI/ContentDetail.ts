@@ -30,13 +30,14 @@ export class ContentDetail {
         detailView.style.left = '0';
         detailView.style.width = '100vw';
         detailView.style.height = '100vh';
-        detailView.style.backgroundColor = '#0a0a0a';
-        detailView.style.color = '#fff';
+        detailView.style.backgroundColor = 'var(--detail-bg)';
+        detailView.style.color = 'var(--text-primary)';
+        detailView.style.transition = 'var(--theme-transition)';
         detailView.style.zIndex = '2000';
         detailView.style.overflowY = 'auto';
         detailView.style.padding = '0';
 
-        // 1. Back Button
+        // 1. Back to Home Button
         const backBtn = document.createElement('button');
         backBtn.innerHTML = '← Back to Home';
         backBtn.style.position = 'fixed';
@@ -56,6 +57,52 @@ export class ContentDetail {
 
         // --- MARKDOWN BRANCH ---
         if (data.sourceType === 'markdown' && data.markdownPath) {
+            // Apply current theme locally to this container
+            const tm = (window as any).themeDarkLight;
+            if (tm) {
+                detailView.classList.add(tm.getThemeClass());
+            }
+
+            // Create Refined Pill Toggle (DARK/LIGHT BUTTON) Only for Obsidian posts
+            const toggleWrapper = document.createElement('div');
+            toggleWrapper.className = 'theme-toggle-wrap';
+            toggleWrapper.innerHTML = `
+                <div class="theme-toggle-btn" id="theme-toggle">
+                    <div class="circle">
+                        <svg class="moon-icon" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
+                        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </div>
+                </div>
+            `;
+
+            // Update icons based on theme
+            const updateIcons = () => {
+                const isDark = detailView.classList.contains('dark-theme');
+                const moon = toggleWrapper.querySelector('.moon-icon') as HTMLElement;
+                const sun = toggleWrapper.querySelector('.sun-icon') as HTMLElement;
+                if (isDark) {
+                    moon.style.display = 'block';
+                    sun.style.display = 'none';
+                } else {
+                    moon.style.display = 'none';
+                    sun.style.display = 'block';
+                }
+            };
+
+            // Add toggle button to detail view
+            const toggleBtn = toggleWrapper.querySelector('#theme-toggle') as HTMLElement;
+            toggleBtn.onclick = () => {
+                if (tm) {
+                    detailView.classList.remove(tm.getThemeClass());
+                    tm.toggleTheme();
+                    detailView.classList.add(tm.getThemeClass());
+                    updateIcons();
+                }
+            };
+
+            updateIcons();
+            detailView.appendChild(toggleWrapper);
+
             const contentArea = document.createElement('div');
             // Add base styles if needed
             detailView.appendChild(contentArea);
