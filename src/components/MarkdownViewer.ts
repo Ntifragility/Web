@@ -6,7 +6,7 @@
  * and post-render enhancements like breadcrumbs and code block line numbers.
  */
 import { markdownParsing } from '../services/MarkdownParsing';
-import hljs from 'highlight.js';
+import 'highlightjs-line-numbers.js';
 import '../styles/markdown.css';
 
 export class MarkdownViewer {
@@ -34,22 +34,7 @@ export class MarkdownViewer {
 
             this.container.innerHTML = heroHtml + bodyHtml;
 
-            // Post-render: Initialize Line Numbers
-            // We need to use 'hljs' global or the imported one if the plugin attaches to it.
-            // Since we imported 'highlightjs-line-numbers.js' in the service (wait, did we?),
-            // we might need to make sure the plugin is active. 
-            // The plugin modifies the 'hljs' object.
-
-            // In a module system, we usually need to import the plugin to side-effect register it.
-            // We'll trust that the global or imported hljs has it. 
-            // If strictly needed, we might do: (window as any).hljs = hljs; and import the script.
-
-            // For now, let's try standard selection.
-            this.container.querySelectorAll('code.hljs').forEach((block) => {
-                if (typeof (hljs as any).lineNumbersBlock === 'function') {
-                    (hljs as any).lineNumbersBlock(block as HTMLElement);
-                }
-            });
+            // Line numbers are now handled directly in the renderer in MarkdownParsing.ts
 
         } catch (err: any) {
             console.error('Markdown Render Error:', err);

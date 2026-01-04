@@ -11,6 +11,12 @@
  */
 import { marked } from 'marked';
 import hljs from 'highlight.js';
+
+// CRITICAL: The line numbers plugin requires hljs to be globally available.
+// It attaches lineNumbersBlock to the global hljs object.
+(window as any).hljs = hljs;
+import 'highlightjs-line-numbers.js';
+
 import bash from 'highlight.js/lib/languages/bash';
 import python from 'highlight.js/lib/languages/python';
 import dockerfile from 'highlight.js/lib/languages/dockerfile';
@@ -163,14 +169,22 @@ export class MarkdownParsing {
             const validLang = language && hljs.getLanguage(language) ? language : 'plaintext';
             const highlighted = hljs.highlight(code, { language: validLang }).value;
 
-            // We return the structure that supports our "Premium Terminal" look
+            // Split into lines for numbering (trim to avoid empty rows at the bottom)
+            const lines = highlighted.trimEnd().split('\n');
+            const linesHtml = lines.map((line, index) => {
+                const lineNumber = index + 1;
+                return `<tr><td class="hljs-ln-numbers" data-line-number="${lineNumber}">${lineNumber}</td><td class="hljs-ln-code">${line}</td></tr>`;
+            }).join('');
+
+            const displayLang = validLang === 'plaintext' ? '' : validLang.charAt(0).toUpperCase() + validLang.slice(1);
+
             return `
                 <div class="code-wrapper">
-                    <div class="code-header">
-                        <span class="lang-badge">${validLang.toUpperCase()}</span>
-                        <button class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText).then(() => { this.innerText = 'Copied!'; setTimeout(() => this.innerText = 'Copy', 2000); })">Copy</button>
-                    </div>
-                    <pre><code class="xml hljs language-${validLang}">${highlighted}</code></pre>
+                    <span class="code-lang">${displayLang}</span>
+                    <button class="copy-btn" onclick="navigator.clipboard.writeText(this.parentElement.querySelector('code').innerText).then(() => { const icon = this.innerHTML; setTimeout(() => this.innerHTML = icon, 2000); })" title="Copy code">
+                        <svg width="15" height="15" viewBox="0 0 50 50" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    </button>
+                    <pre><code class="hljs language-${validLang}"><table class="hljs-ln">${linesHtml}</table></code></pre>
                 </div>
             `;
         };

@@ -15,115 +15,151 @@
     margin-bottom: 1rem;
 }
 
-/* --- CODE BLOCK CONTAINER --- */
+/* --- CODE BLOCKS --- */
 .code-wrapper {
-    background: #011627;
-    /* Night Owl Background */
+    background: #011E26 !important;
     border-radius: 8px;
     margin: 1.5rem 0;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    border: 1px solid #1d3b53;
+    border-left: 4px solid #38bdf8;
+    /* Thick Left Accent */
     position: relative;
     overflow: hidden;
-}
-
-.code-header {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 8px 16px;
-    background: rgba(255, 255, 255, 0.03);
-    border-bottom: 1px solid #1d3b53;
-    gap: 12px;
-}
-
-.lang-badge {
-    color: #82AAFF;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    opacity: 0.8;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
 .copy-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
     background: transparent;
-    border: 1px solid rgba(128, 203, 196, 0.3);
-    color: #80CBC4;
-    border-radius: 4px;
-    padding: 4px 10px;
-    font-size: 0.75rem;
+    border: none;
+    color: rgba(224, 251, 252, 0.4);
     cursor: pointer;
     transition: all 0.2s;
-    font-family: 'JetBrains Mono', monospace;
+    z-index: 10;
+    padding: 6px;
+    border-radius: 4px;
 }
 
 .copy-btn:hover {
-    background: rgba(128, 203, 196, 0.1);
-    border-color: #80CBC4;
+    color: #38bdf8;
+    background: rgba(56, 189, 248, 0.1);
+}
+
+.code-lang {
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    /* Position to the left of the copy button */
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: rgba(56, 189, 248, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    pointer-events: none;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 .markdown-body pre {
     margin: 0;
-    padding: 0;
+    padding: 1.2rem 0 1.2rem 0;
+    /* Add controlled small vertical padding */
     background: transparent !important;
+    border: none;
 }
 
 .markdown-body code {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.95rem;
+    font-size: 1.5rem;
+    color: #e0fbfc;
+    display: block;
+    background: transparent !important;
+    line-height: 1.4;
+    padding: 0 !important;
 }
 
-/* --- SYNTAX HIGHLIGHTING (Night Owl Style) --- */
+/* --- SYNTAX HIGHLIGHTING (Vibrant Mix) --- */
 .hljs-keyword,
-.hljs-selector-tag,
-.hljs-operator {
-    color: #c792ea !important;
-    font-weight: 800 !important;
+.hljs-operator,
+.hljs-punctuation {
+    color: #f472b6 !important;
+    font-weight: 700 !important;
+}
+
+.hljs-class,
+.hljs-title.class_ {
+    color: #38bdf8 !important;
 }
 
 .hljs-function,
 .hljs-title,
-.hljs-section {
-    color: #82AAFF !important;
-    font-weight: 800 !important;
+.hljs-params {
+    color: #fbbf24 !important;
 }
 
 .hljs-string,
 .hljs-attr {
-    color: #ecc48d;
+    color: #fca5a5;
 }
 
 .hljs-comment,
 .hljs-quote {
-    color: #637777;
-    font-style: italic;
+    color: #38bdf8;
+    opacity: 0.6;
+    font-style: normal;
 }
 
 .hljs-number,
 .hljs-literal {
-    color: #F78C6C;
+    color: #fbbf24;
 }
 
-/* --- LINE NUMBERS --- */
-.hljs-ln-numbers {
-    text-align: right;
-    border-right: 1px solid #1d3b53;
-    color: #4b6479;
-    padding-right: 15px !important;
-    padding-left: 15px !important;
-    user-select: none;
-    width: 40px;
-}
-
-.hljs-ln-code {
-    padding-left: 15px !important;
-}
-
+/* Line Numbers Layout (matches Image 2) */
 table.hljs-ln {
     border-collapse: collapse;
     width: 100%;
+    margin: 0 !important;
+    /* Override general table margin */
+}
+
+table.hljs-ln tr {
+    background: transparent !important;
+}
+
+table.hljs-ln td {
+    border: none !important;
+    padding: 0;
+    vertical-align: top;
+}
+
+.hljs-ln-numbers {
+    user-select: none;
+    text-align: right;
+    color: #4b6479;
+    padding: 0.12rem 1rem 0.12rem 1.5rem !important;
+    width: 45px;
+    min-width: 45px;
+    background: rgba(0, 0, 0, 0.15);
+    /* Distinct gutter background */
+}
+
+.hljs-ln-code {
+    padding: 0.12rem 1.5rem !important;
+    white-space: pre;
+    position: relative;
+    background: transparent !important;
+}
+
+/* The Vertical Separator */
+.hljs-ln-code::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: #086F80;
+    opacity: 0.3;
 }
 
 /* --- MATH & IMAGES --- */
