@@ -1,3 +1,7 @@
+/**
+ * @file Atmosphere.ts
+ * @description 3D atmospheric glow and weather effects for earth.
+ */
 import * as THREE from 'three';
 
 export function createAtmosphere() {

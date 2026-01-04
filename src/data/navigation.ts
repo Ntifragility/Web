@@ -1,6 +1,6 @@
 /**
  * @file navigation.ts
- * @description Centralized data for the navigation bar.
+ * @description Configuration for navigation links and structure.
  */
 
 export interface NavLink {

@@ -1,3 +1,7 @@
+/**
+ * @file Earth.ts
+ * @description 3D earth globe component with shaders and textures.
+ */
 import * as THREE from 'three';
 
 export function createEarth(scene: THREE.Group, loadingManager?: THREE.LoadingManager) {

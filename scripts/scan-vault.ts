@@ -1,3 +1,7 @@
+/**
+ * @file scan-vault.ts
+ * @description Scanner utility to generate dynamic content from Obsidian vault.
+ */
 import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -17,7 +21,8 @@ interface VaultEntry {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const VAULT_PATH = path.join(__dirname, '../public/vault');
+const VAULT_PATH = path.join(__dirname, '../public/vault/ready');
+const MANIFEST_URL_BASE = '/vault/ready'; // Base URL for markdown files in manifest
 const OUTPUT_PATH = path.join(__dirname, '../src/data/vault-manifest.json');
 
 // Default placeholder image if none found
@@ -54,6 +59,12 @@ function findMarkdownFiles(dir: string, baseDir: string = dir): string[] {
 
 async function scanVault(): Promise<void> {
     console.log('🔍 Scanning Obsidian vault...');
+    // Ensure the READY directory exists
+    if (!fs.existsSync(VAULT_PATH)) {
+        console.log(`  📂 Creating missing READY directory: ${VAULT_PATH}`);
+        fs.mkdirSync(VAULT_PATH, { recursive: true });
+    }
+
     console.log(`   Vault path: ${VAULT_PATH}`);
 
     // Find all .md files recursively (custom function for junction support)
@@ -116,7 +127,7 @@ async function scanVault(): Promise<void> {
             subtitle,
             date,
             image,
-            markdownPath: `/vault/${file}`,
+            markdownPath: `${MANIFEST_URL_BASE}/${file}`,
             category
         });
 

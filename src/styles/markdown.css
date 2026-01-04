@@ -7,7 +7,9 @@
     font-size: 1.1rem;
 }
 
-.markdown-body h1, .markdown-body h2, .markdown-body h3 {
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
     color: #82AAFF;
     margin-top: 2.5rem;
     margin-bottom: 1rem;
@@ -15,7 +17,8 @@
 
 /* --- CODE BLOCK CONTAINER --- */
 .code-wrapper {
-    background: #011627; /* Night Owl Background */
+    background: #011627;
+    /* Night Owl Background */
     border-radius: 8px;
     margin: 1.5rem 0;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -73,11 +76,35 @@
 }
 
 /* --- SYNTAX HIGHLIGHTING (Night Owl Style) --- */
-.hljs-keyword, .hljs-selector-tag, .hljs-operator { color: #c792ea !important; font-weight: 800 !important; }
-.hljs-function, .hljs-title, .hljs-section { color: #82AAFF !important; font-weight: 800 !important; }
-.hljs-string, .hljs-attr { color: #ecc48d; }
-.hljs-comment, .hljs-quote { color: #637777; font-style: italic; }
-.hljs-number, .hljs-literal { color: #F78C6C; }
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-operator {
+    color: #c792ea !important;
+    font-weight: 800 !important;
+}
+
+.hljs-function,
+.hljs-title,
+.hljs-section {
+    color: #82AAFF !important;
+    font-weight: 800 !important;
+}
+
+.hljs-string,
+.hljs-attr {
+    color: #ecc48d;
+}
+
+.hljs-comment,
+.hljs-quote {
+    color: #637777;
+    font-style: italic;
+}
+
+.hljs-number,
+.hljs-literal {
+    color: #F78C6C;
+}
 
 /* --- LINE NUMBERS --- */
 .hljs-ln-numbers {
@@ -111,7 +138,7 @@ table.hljs-ln {
     border-radius: 8px;
     margin: 2rem auto;
     display: block;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
 .wiki-link {
@@ -123,4 +150,128 @@ table.hljs-ln {
 .wiki-link:hover {
     color: #82AAFF;
     border-bottom-style: solid;
+}
+
+/* --- CALLOUTS --- */
+.callout {
+    margin: 1.5rem 0;
+    padding: 1.25rem;
+    border-radius: 8px;
+    border-left: 5px solid #444;
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.callout-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.9rem;
+}
+
+.callout-content {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.callout-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Callout Variants */
+.callout-info,
+.callout-note {
+    border-left-color: #82AAFF;
+    background: rgba(130, 170, 255, 0.05);
+}
+
+.callout-info .callout-title {
+    color: #82AAFF;
+}
+
+.callout-tip,
+.callout-hint,
+.callout-success {
+    border-left-color: #C3E88D;
+    background: rgba(195, 232, 141, 0.05);
+}
+
+.callout-tip .callout-title,
+.callout-success .callout-title {
+    color: #C3E88D;
+}
+
+.callout-warning,
+.callout-important,
+.callout-caution {
+    border-left-color: #FFCB6B;
+    background: rgba(255, 203, 107, 0.05);
+}
+
+.callout-warning .callout-title {
+    color: #FFCB6B;
+}
+
+.callout-error,
+.callout-danger {
+    border-left-color: #FF5370;
+    background: rgba(255, 83, 112, 0.05);
+}
+
+.callout-error .callout-title {
+    color: #FF5370;
+}
+
+.callout-question {
+    border-left-color: #C792EA;
+    background: rgba(199, 146, 234, 0.05);
+}
+
+.callout-question .callout-title {
+    color: #C792EA;
+}
+
+/* --- TABLES --- */
+.markdown-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.95rem;
+}
+
+.markdown-body th {
+    background: rgba(130, 170, 255, 0.1);
+    color: #82AAFF;
+    font-weight: 800;
+    text-align: left;
+}
+
+.markdown-body th,
+.markdown-body td {
+    padding: 12px 15px;
+    border: 1px solid #1d3b53;
+}
+
+.markdown-body tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+/* --- TASK LISTS --- */
+.markdown-body ul.contains-task-list {
+    list-style: none;
+    padding-left: 0;
+}
+
+.markdown-body .task-list-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.markdown-body .task-list-item input[type="checkbox"] {
+    margin-top: 6px;
+    accent-color: var(--accent-blue);
 }

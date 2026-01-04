@@ -1,3 +1,7 @@
+/**
+ * @file HeroSection.ts
+ * @description Hero landing section with title and initial CTA.
+ */
 import { heroData } from '@/data/hero';
 
 export class HeroSection {

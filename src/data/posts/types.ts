@@ -1,6 +1,6 @@
 /**
  * @file types.ts
- * @description Shared types for content data.
+ * @description TypeScript interfaces for post data types.
  */
 
 export interface DetailSection {

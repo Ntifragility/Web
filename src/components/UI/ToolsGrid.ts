@@ -1,6 +1,6 @@
 /**
  * @file ToolsGrid.ts
- * @description Renders a grid of tools with categories and links.
+ * @description Grid display for development tools and stack.
  */
 
 import { toolsData, ToolCategory } from '@/data/tools';

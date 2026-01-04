@@ -1,7 +1,6 @@
 /**
  * @file ContentDetail.ts
- * @description Renders a full-screen detailed view of a content item.
- * Simulates a "random website" experience for each card.
+ * @description Detailed view component for individual post content.
  */
 
 import { contentDetails } from '@/data/posts';

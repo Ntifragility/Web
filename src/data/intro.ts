@@ -1,6 +1,6 @@
 /**
  * @file intro.ts
- * @description Centralized content for the Intro (About) section.
+ * @description Static content for the intro section.
  */
 
 export const introData = {

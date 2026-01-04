@@ -1,3 +1,7 @@
+/**
+ * @file IntroSection.ts
+ * @description Introduction section with bio and welcome message.
+ */
 import { introData } from '@/data/intro';
 
 export class IntroSection {

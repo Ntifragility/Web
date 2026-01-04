@@ -1,3 +1,7 @@
+/**
+ * @file Navigation.ts
+ * @description Sidebar navigation and interaction handling.
+ */
 import { navigationData } from '@/data/navigation';
 
 export class Navigation {

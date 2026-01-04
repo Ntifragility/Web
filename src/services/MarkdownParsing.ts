@@ -1,8 +1,27 @@
+/**
+ * @file MarkdownParsing.ts
+ * @description Centralized service for advanced Markdown parsing and rendering.
+ * Features include:
+ * - Obsidian-style Callouts (![!TYPE])
+ * - Multi-language syntax highlighting via Highlight.js
+ * - Mathematical notation rendering via KaTeX (Inline and Block)
+ * - Obsidian ![[wikilinks]] and [[PostLinks]] resolution
+ * - Custom Front Matter (YAML) extraction
+ * - Premium terminal-style code containers with copy-to-clipboard functionality
+ */
 import { marked } from 'marked';
 import hljs from 'highlight.js';
 import bash from 'highlight.js/lib/languages/bash';
 import python from 'highlight.js/lib/languages/python';
 import dockerfile from 'highlight.js/lib/languages/dockerfile';
+import typescript from 'highlight.js/lib/languages/typescript';
+import javascript from 'highlight.js/lib/languages/javascript';
+import css from 'highlight.js/lib/languages/css';
+import yaml from 'highlight.js/lib/languages/yaml';
+import json from 'highlight.js/lib/languages/json';
+import sql from 'highlight.js/lib/languages/sql';
+import cpp from 'highlight.js/lib/languages/cpp';
+import java from 'highlight.js/lib/languages/java';
 import katex from 'katex';
 
 // Import Styles
@@ -13,13 +32,21 @@ import 'katex/dist/katex.min.css';
 hljs.registerLanguage('bash', bash);
 hljs.registerLanguage('python', python);
 hljs.registerLanguage('dockerfile', dockerfile);
+hljs.registerLanguage('typescript', typescript);
+hljs.registerLanguage('javascript', javascript);
+hljs.registerLanguage('css', css);
+hljs.registerLanguage('yaml', yaml);
+hljs.registerLanguage('json', json);
+hljs.registerLanguage('sql', sql);
+hljs.registerLanguage('cpp', cpp);
+hljs.registerLanguage('java', java);
 
 export interface ParsedPost {
     metadata: Record<string, string>;
     html: string;
 }
 
-export class MarkdownService {
+export class MarkdownParsing {
 
     constructor() {
         this.configureMarked();
@@ -77,7 +104,57 @@ export class MarkdownService {
             }
         };
 
-        marked.use({ extensions: [mathBlock as any, mathInline as any] });
+
+        const calloutExtension = {
+            name: 'callout',
+            level: 'block',
+            start(src: string) { return src.match(/^> \[!/)?.index; },
+            tokenizer(src: string) {
+                const match = /^> \[!(\w+)\](.*?)\n((?:>.*\n?)*)/.exec(src);
+                if (match) {
+                    return {
+                        type: 'callout',
+                        raw: match[0],
+                        calloutType: match[1].toLowerCase(),
+                        title: match[2].trim(),
+                        content: match[3].replace(/^>/gm, '').trim()
+                    };
+                }
+                return;
+            },
+            renderer(token: any) {
+                const icons: Record<string, string> = {
+                    info: 'ℹ️',
+                    note: '📝',
+                    tip: '💡',
+                    hint: '💡',
+                    important: '❗',
+                    warning: '⚠️',
+                    caution: '🔥',
+                    error: '❌',
+                    danger: '☢️',
+                    question: '❓',
+                    todo: '✅',
+                    abstract: '📋',
+                    summary: '📋',
+                    success: '✔️',
+                    failure: '❌'
+                };
+                const icon = icons[token.calloutType] || '🗒️';
+                const title = token.title || token.calloutType.toUpperCase();
+                return `
+                    <div class="callout callout-${token.calloutType}">
+                        <div class="callout-header">
+                            <span class="callout-icon">${icon}</span>
+                            <span class="callout-title">${title}</span>
+                        </div>
+                        <div class="callout-content">${marked.parse(token.content)}</div>
+                    </div>
+                `;
+            }
+        };
+
+        marked.use({ extensions: [mathBlock as any, mathInline as any, calloutExtension as any] });
 
         // 2. Custom Renderer (Code Blocks & Images)
         const renderer = new marked.Renderer();
@@ -186,4 +263,4 @@ export class MarkdownService {
     }
 }
 
-export const markdownService = new MarkdownService();
+export const markdownParsing = new MarkdownParsing();

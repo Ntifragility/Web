@@ -1,4 +1,11 @@
-import { markdownService } from '../services/MarkdownService';
+/**
+ * @file MarkdownViewer.ts
+ * @description Component responsible for rendering parsed Markdown content into the DOM.
+ * It acts as the UI orchestration layer that utilizes the 'MarkdownParsing' service
+ * to fetch and parse raw markdown files, subsequently handling the domestic rendering 
+ * and post-render enhancements like breadcrumbs and code block line numbers.
+ */
+import { markdownParsing } from '../services/MarkdownParsing';
 import hljs from 'highlight.js';
 import '../styles/markdown.css';
 
@@ -13,11 +20,17 @@ export class MarkdownViewer {
         this.container.innerHTML = '<div style="padding: 4rem; text-align: center; color: #888;">Loading content...</div>';
 
         try {
-            const { html, metadata } = await markdownService.fetchAndParse(markdownPath);
+            const { html, metadata } = await markdownParsing.fetchAndParse(markdownPath);
 
             // Build the full view
             const heroHtml = this.buildHero(metadata);
-            const bodyHtml = `<div class="markdown-body" style="padding: 0 2rem; max-width: 900px; margin: 0 auto;">${html}</div>`;
+            const breadcrumbs = this.buildBreadcrumbs(metadata, markdownPath);
+            const bodyHtml = `
+                <div class="markdown-container" style="max-width: 1000px; margin: 0 auto; padding-bottom: 5rem;">
+                    ${breadcrumbs}
+                    <div class="markdown-body" style="padding: 0 2rem;">${html}</div>
+                </div>
+            `;
 
             this.container.innerHTML = heroHtml + bodyHtml;
 
@@ -75,6 +88,31 @@ export class MarkdownViewer {
                 <p style="font-size: 1.5rem; opacity: 0.9; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">${subtitle}</p>
                 ${date ? `<p style="margin-top: 1rem; color: var(--accent-blue); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">${date}</p>` : ''}
             </section>
+        `;
+    }
+
+    private buildBreadcrumbs(metadata: Record<string, string>, path: string): string {
+        const category = metadata.category || (path.includes('ready/') ? path.split('ready/')[1].split('/')[0] : 'General');
+        const title = metadata.title || path.split('/').pop()?.replace('.md', '') || 'Untitled';
+
+        return `
+            <div class="markdown-breadcrumbs" style="
+                padding: 1.5rem 2rem;
+                font-size: 0.85rem;
+                color: #888;
+                font-family: var(--font-heading);
+                text-transform: uppercase;
+                letter-spacing: 0.1em;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            ">
+                <a href="#" style="color: inherit; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Home</a>
+                <span>/</span>
+                <span style="color: var(--accent-blue); font-weight: 700;">${category}</span>
+                <span>/</span>
+                <span style="color: #ccc;">${title}</span>
+            </div>
         `;
     }
 }

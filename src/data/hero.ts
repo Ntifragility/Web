@@ -1,6 +1,6 @@
 /**
  * @file hero.ts
- * @description Centralized data for the Hero section.
+ * @description Static content for the hero section.
  */
 
 export const heroData = {

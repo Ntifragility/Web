@@ -1,10 +1,9 @@
 /**
  * @file tools.ts
- * @description Mock data for the Tools section.
+ * @description Data definitions for the tools and tech stack.
  */
 
 export type ToolCategory = 'development' | 'design' | 'productivity' | 'learning';
-
 export interface ToolItem {
     id: string;
     category: ToolCategory;

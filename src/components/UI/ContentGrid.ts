@@ -1,3 +1,7 @@
+/**
+ * @file ContentGrid.ts
+ * @description Grid display for blog posts and projects.
+ */
 import { contentData, ContentType, contentSectionData } from '@/data/content';
 
 export class ContentGrid {
