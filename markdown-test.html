@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown Parser Experiment</title>
+    <!-- Use the existing styles so it looks legitimate -->
+    <link rel="stylesheet" href="/src/styles/index.css">
+
+    <!-- Load marked.js (Pinned to 4.3.0 for stability) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+
+    <!-- Load Highlight.js -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/dockerfile.min.js"></script>
+
+    <!-- Highlight.js Line Numbers Plugin -->
+    <script
+        src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.8.0/highlightjs-line-numbers.min.js"></script>
+
+    <!-- KaTeX for LaTeX rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+    <style>
+        /* Import JetBrains Mono with 800 (Extra Bold) weight */
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
+
+        body {
+            background-color: #011627;
+            /* Night Owl Dark Blue Background */
+            color: #d6deeb;
+            font-family: 'Poppins', sans-serif;
+            overflow-y: auto;
+        }
+
+        #experiment-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-bottom: 100px;
+        }
+
+        /* Helper for Step styling */
+        .step-header {
+            color: #82AAFF;
+            /* Soft Blue */
+            font-size: 1.4rem;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        /* --- CODE BLOCK CONTAINER --- */
+        .code-wrapper {
+            background: #011627;
+            /* Night Owl Background */
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1d3b53;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Header Bar for Code Block */
+        .code-header {
+            display: flex;
+            justify-content: flex-end;
+            /* Push items to the right */
+            align-items: center;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid #1d3b53;
+            gap: 12px;
+        }
+
+        /* Language Badge */
+        .lang-badge {
+            color: #82AAFF;
+            /* Use Accent Color */
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.8;
+            user-select: none;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: 1px solid rgba(128, 203, 196, 0.3);
+            color: #80CBC4;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+
+        .copy-btn:hover {
+            background: rgba(128, 203, 196, 0.1);
+            border-color: #80CBC4;
+        }
+
+        /* The actual pre/code area */
+        .markdown-body pre {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+        }
+
+        .markdown-body code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            font-weight: 400;
+            /* reset base weight */
+        }
+
+        /* Standard Markdown Bold */
+        .markdown-body strong {
+            color: #ff7b72;
+            font-weight: 800 !important;
+            /* Force Extra Bold */
+        }
+
+        /* KaTeX Math Block Styling - MINIMALIST */
+        .katex-display {
+            background: transparent;
+            /* No Box */
+            padding: 1rem 0;
+            /* Just vertical spacing */
+            border: none;
+            /* No Border */
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        /* --- IMAGE STYLING --- */
+        .markdown-body img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 1.5rem auto;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* --- LINE NUMBERS styling --- */
+        .hljs-ln-numbers {
+            text-align: right;
+            border-right: 1px solid #1d3b53;
+            color: #4b6479;
+            padding-right: 15px !important;
+            padding-left: 15px !important;
+            user-select: none;
+            width: 40px;
+            /* fixed width for alignment */
+        }
+
+        .hljs-ln-code {
+            padding-left: 15px !important;
+        }
+
+        /* Fix table layout for line numbers */
+        table.hljs-ln {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        table.hljs-ln td {
+            vertical-align: top;
+            padding: 0;
+        }
+
+        /* --- SYNTAX HIGHLIGHTING (Night Owl Style) --- */
+        /* Keywords: Magenta/Purple & BOLD */
+        .hljs-keyword,
+        .hljs-selector-tag,
+        .hljs-operator {
+            color: #c792ea !important;
+            font-weight: 800 !important;
+            /* Force Extra Bold */
+        }
+
+        /* Functions/Methods: Blue */
+        .hljs-function,
+        .hljs-title,
+        .hljs-section {
+            color: #82AAFF !important;
+            font-weight: 800 !important;
+        }
+
+        /* Strings: Light Green/Teal */
+        .hljs-string,
+        .hljs-attr {
+            color: #ecc48d;
+            /* Gold/Yellow for strings pops nicely against blue */
+        }
+
+        /* Variables: bright white/blue */
+        .hljs-variable,
+        .hljs-template-variable {
+            color: #d6deeb;
+        }
+
+        /* Comments: Grey/Italic */
+        .hljs-comment,
+        .hljs-quote {
+            color: #637777;
+            font-style: italic;
+        }
+
+        /* Bash Specifics */
+        .hljs-built_in {
+            color: #82AAFF !important;
+            /* Blue for commands like 'cd', 'echo' */
+            font-weight: 800 !important;
+        }
+
+        /* Numbers */
+        .hljs-number,
+        .hljs-literal {
+            color: #F78C6C;
+            /* Orange */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="experiment-container">
+        <!-- Content will be injected here -->
+    </div>
+
+    <script>
+        // --- 1. DEFINE KaTeX EXTENSIONS FOR MARKED ---
+        const mathBlock = {
+            name: 'math',
+            level: 'block',
+            start(src) { return src.match(/\$\$/)?.index; },
+            tokenizer(src, tokens) {
+                const match = /^\$\$([\s\S]*?)\$\$/.exec(src);
+                if (match) {
+                    return {
+                        type: 'math',
+                        raw: match[0],
+                        text: match[1].trim(),
+                        displayMode: true
+                    };
+                }
+            },
+            renderer(token) {
+                try {
+                    return katex.renderToString(token.text, { displayMode: true });
+                } catch (err) {
+                    return `<div style="color:red">${err.message}</div>`;
+                }
+            }
+        };
+
+        const mathInline = {
+            name: 'mathInline',
+            level: 'inline',
+            start(src) { return src.match(/\$/)?.index; },
+            tokenizer(src, tokens) {
+                const match = /^\$([^$\n]+?)\$/.exec(src);
+                if (match) {
+                    return {
+                        type: 'mathInline',
+                        raw: match[0],
+                        text: match[1].trim(),
+                        displayMode: false
+                    };
+                }
+            },
+            renderer(token) {
+                try {
+                    return katex.renderToString(token.text, { displayMode: false });
+                } catch (err) {
+                    return `<span style="color:red">${err.message}</span>`;
+                }
+            }
+        };
+
+        marked.use({ extensions: [mathBlock, mathInline] });
+
+        // --- 2. CONFIGURE NORMAL MARKED OPTIONS ---
+        marked.setOptions({
+            highlight: function (code, lang) {
+                return code; // Manual Highlight done later
+            }
+        });
+
+        async function loadMarkdown() {
+            try {
+                const response = await fetch('/mock-post.md');
+                const text = await response.text();
+
+                // Simple Front Matter Strip
+                const frontMatterRegex = /^---\n([\s\S]*?)\n---/;
+                let body = text.replace(frontMatterRegex, '').trim();
+
+                // --- OBSIDIAN IMAGE PRE-PROCESSING ---
+                // Transforms ![[image.png | 123]] to <img src="/images/image.png" width="123" />
+                // Regex improvement: Allow optional whitespace (\s*) around the pipe and before digits
+                body = body.replace(/!\[\[(.*?)(?:\|\s*(\d+))?\]\]/g, (match, filename, width) => {
+                    const cleanName = filename.trim();
+                    const widthAttr = width ? `width="${width}"` : '';
+                    // Try to look in /images/ first, but we could also check root if needed
+                    return `<img src="/images/${cleanName}" ${widthAttr} alt="${cleanName}" />`;
+                });
+
+                // --- WIKILINK PRE-PROCESSING ---
+                // Transforms [[PostID]] to <a href="#content/PostID">PostID</a>
+                body = body.replace(/(?<!!)\[\[(.*?)(?:\|\s*(.*?))?\]\]/g, (_match, linkTarget, linkAlias) => {
+                    const cleanTarget = linkTarget.trim();
+                    const display = linkAlias ? linkAlias.trim() : cleanTarget;
+                    return `<a href="#content/${cleanTarget}" class="wiki-link">${display}</a>`;
+                });
+
+                // Custom Renderer for Code Blocks
+                const renderer = new marked.Renderer();
+                renderer.code = function (code, language) {
+                    const validLang = language && hljs.getLanguage(language) ? language : 'plaintext';
+                    const highlighted = hljs.highlight(code, { language: validLang }).value;
+
+                    return `
+                        <div class="code-wrapper">
+                            <div class="code-header">
+                                <span class="lang-badge">${validLang.toUpperCase()}</span>
+                                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                            </div>
+                            <pre><code class="xml hljs language-${validLang}">${highlighted}</code></pre>
+                        </div>
+                    `;
+                };
+
+                marked.use({ renderer });
+
+                const container = document.getElementById('experiment-container');
+
+                // Parse markdown (math extensions will handle $$)
+                container.innerHTML = `<div class="markdown-body">${marked.parse(body)}</div>`;
+
+                // Initialize Line Numbers
+                document.querySelectorAll('code.hljs').forEach(block => {
+                    hljs.lineNumbersBlock(block);
+                });
+
+            } catch (err) {
+                console.error(err);
+                document.body.innerHTML = `<h1 style="color:red">Error: ${err.message}</h1>`;
+            }
+        }
+
+        function copyCode(btn) {
+            const wrapper = btn.closest('.code-wrapper');
+            const code = wrapper.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const original = btn.innerText;
+                btn.innerText = "Copied!";
+                setTimeout(() => btn.innerText = original, 2000);
+            });
+        }
+
+        loadMarkdown();
+    </script>
+</body>
+
+</html>

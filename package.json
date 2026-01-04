@@ -10,9 +10,16 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "highlight.js": "^11.11.1",
+    "highlightjs-line-numbers.js": "^2.9.1",
+    "katex": "^0.16.27",
+    "marked": "^4.3.0",
     "three": "^0.150.0"
   },
   "devDependencies": {
+    "@types/highlight.js": "^9.12.4",
+    "@types/katex": "^0.16.7",
+    "@types/marked": "^5.0.2",
     "@types/node": "^25.0.3",
     "@types/three": "^0.150.0",
     "typescript": "^5.0.0",

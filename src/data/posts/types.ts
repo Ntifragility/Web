@@ -11,5 +11,7 @@ export interface DetailSection {
 export interface ContentDetailData {
     id: string;
     title: string;
-    sections: DetailSection[];
+    sourceType?: 'hardcoded' | 'markdown';
+    markdownPath?: string;
+    sections?: DetailSection[];
 }

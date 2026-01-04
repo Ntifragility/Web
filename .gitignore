@@ -113,3 +113,9 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Local Obsidian Vault Mirror
+public/vault/
+public/vault-harmonics/
+public/vault-main/
+.obsidian/

@@ -82,5 +82,23 @@ export const contentData: ContentItem[] = [
         thumbnail: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?auto=format&fit=crop&q=80&w=600',
         url: '#content/6',
         source: 'Medium'
+    },
+    {
+        id: '7-obsidian-notes',
+        type: 'blog',
+        title: 'Obsidian Notes & Harmonics',
+        date: '2025-11-08',
+        thumbnail: '/images/NEMA-Armonicos-1.png',
+        url: '#content/7-obsidian-notes',
+        source: 'Obsidian'
+    },
+    {
+        id: '8-cloud-run',
+        type: 'blog',
+        title: 'Developing in G Cloud Run',
+        date: '2026-01-03',
+        thumbnail: 'https://images.unsplash.com/photo-1621839673705-6617adf9e890?auto=format&fit=crop&q=80&w=600',
+        url: '#content/8-cloud-run',
+        source: 'Obsidian'
     }
 ];
