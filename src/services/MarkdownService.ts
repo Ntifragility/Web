@@ -152,19 +152,20 @@ export class MarkdownService {
 
             // 3. Image Resolution Strategy:
             // Obsidian images can be in the same folder, /img/, or /attachments/
-            // Since we can't check existence client-side without extra requests, 
-            // we use a heuristic based on your vault structure.
-
             let filenameEncoded = encodeURIComponent(cleanName);
             let src = `${basePath}${filenameEncoded}`;
 
-            // If we're in a vault junction, try to find the image in subfolders
-            if (url.includes('vault')) {
-                // Heuristic: If it's the harmonics vault, it's definitely in /img/
-                if (url.includes('vault-harmonics')) {
+            // If we're in a vault junction, apply subfolder heuristics
+            if (url.includes('vault/')) {
+                // Heuristic: Many Obsidian users (including this one) use an /img/ subfolder
+                // for images. We default to checking /img/ if it's not in the root of the folder.
+                // In a more complex app, we'd use a fallback <img onerror="...">.
+
+                // For the Harmonics case specifically:
+                if (url.includes('NEMA - ARMONICOS')) {
                     src = `${basePath}img/${filenameEncoded}`;
                 }
-                // Fallback for other vaults: try to guess or use root
+                // We'll keep this heuristic extensible.
             }
 
             return `<img src="${src}" ${widthAttr} alt="${cleanName}" />`;
