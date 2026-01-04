@@ -22,11 +22,89 @@
     background: var(--code-bg, #011E26) !important;
     border-radius: 8px;
     margin: 1.5rem 0;
-    border-left: 4px solid #38bdf8;
-    /* Thick Left Accent */
+    /* border-left removed in favor of gradient ::before */
     position: relative;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+    scrollbar-gutter: stable;
+
+    /* Custom Scrollbar (Firefox) - simplified for better compatibility */
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent-blue) rgba(0, 0, 0, 0.2);
+}
+
+/* 
+   FORCE SCROLLBAR STYLES
+   We target all elements inside .markdown-body to ensure 
+   the stylish look applies everywhere.
+*/
+.markdown-body *::-webkit-scrollbar {
+    height: 8px;
+    width: 8px;
+}
+
+.markdown-body *::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+.markdown-body *::-webkit-scrollbar-thumb {
+    background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(77, 153, 255, 0.3);
+    transition: background 0.2s ease;
+}
+
+.markdown-body *::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to right, var(--accent-blue-light, #82AAFF), var(--accent-purple-light, #D392FF));
+}
+
+.markdown-body *::-webkit-scrollbar-button {
+    display: none !important;
+}
+
+/* Vertical Gradient Accent Bar */
+.code-wrapper::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(to bottom, var(--accent-blue), var(--accent-purple));
+    z-index: 5;
+}
+
+/* 
+   Code wrapper specific scrollbar - inherits from general styles
+   but ensures proper sizing for horizontal scrolling
+*/
+.code-wrapper::-webkit-scrollbar {
+    height: 10px; /* Slightly taller for better usability */
+}
+
+.code-wrapper::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.25); /* Darker track for code blocks */
+    border-radius: 10px;
+    margin: 0 4px;
+}
+
+.code-wrapper::-webkit-scrollbar-thumb {
+    background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(77, 153, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.code-wrapper::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(to right, var(--accent-blue-light, #82AAFF), var(--accent-purple-light, #D392FF));
+    box-shadow: 0 0 15px rgba(77, 153, 255, 0.6);
+}
+
+.code-wrapper::-webkit-scrollbar-button {
+    display: none !important;
 }
 
 .copy-btn {
@@ -52,7 +130,6 @@
     position: absolute;
     top: 10px;
     right: 50px;
-    /* Position to the left of the copy button */
     font-size: 0.8rem;
     font-weight: 700;
     color: rgba(56, 189, 248, 0.4);
@@ -65,9 +142,9 @@
 .markdown-body pre {
     margin: 0;
     padding: 1.2rem 0 1.2rem 0;
-    /* Add controlled small vertical padding */
     background: transparent !important;
     border: none;
+    overflow: visible !important;
 }
 
 .markdown-body code {
@@ -78,6 +155,7 @@
     background: transparent !important;
     line-height: 1.4;
     padding: 0 !important;
+    overflow: visible !important;
 }
 
 /* --- SYNTAX HIGHLIGHTING (Vibrant Mix) --- */

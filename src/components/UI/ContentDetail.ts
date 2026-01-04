@@ -45,9 +45,9 @@ export class ContentDetail {
         backBtn.style.left = '2rem';
         backBtn.style.zIndex = '10';
         backBtn.style.padding = '0.8rem 1.5rem';
-        backBtn.style.background = 'rgba(255, 255, 255, 0.1)';
-        backBtn.style.border = '1px solid rgba(255,255,255,0.2)';
-        backBtn.style.color = '#fff';
+        backBtn.style.background = 'var(--glass-bg)';
+        backBtn.style.border = '1px solid var(--glass-border)';
+        backBtn.style.color = 'var(--text-primary)';
         backBtn.style.borderRadius = '30px';
         backBtn.style.cursor = 'pointer';
         backBtn.style.backdropFilter = 'blur(10px)';

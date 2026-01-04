@@ -7,12 +7,14 @@
     --text-secondary: rgba(255, 255, 255, 0.7);
     --accent-blue: #4D99FF;
     --accent-purple: #bd00ff;
+
+    /*Back to Home button background in dark mode */
     --glass-bg: rgba(255, 255, 255, 0.05);
     --glass-border: rgba(255, 255, 255, 0.1);
     --card-bg: #121212;
     --card-border: #1e1e1e;
-    --detail-bg: #0a0a0a;
     /*Header Background in dark mode */
+    --detail-bg: #0a0a0a;
     --hero-overlay: rgba(0, 0, 0, 0.6);
 
     /* Transitions */
@@ -32,6 +34,8 @@
     --bg-color: #f8fafc;
     --text-primary: #0f172a;
     --text-secondary: #475569;
+
+    /*Back to Home button background in light mode */
     --glass-bg: rgba(255, 255, 255, 0.82);
     --glass-border: rgba(0, 0, 0, 0.12);
     --card-bg: #ffffff;
