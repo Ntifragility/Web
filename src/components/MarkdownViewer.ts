@@ -26,21 +26,31 @@ export class MarkdownViewer {
         this.container.innerHTML = '<div style="padding: 4rem; text-align: center; color: var(--text-secondary);">Loading content...</div>';
 
         try {
-            const { html, metadata } = await markdownParsing.fetchAndParse(markdownPath);
+            const { html, metadata, toc } = await markdownParsing.fetchAndParse(markdownPath);
 
             // Build the full view
             const heroHtml = this.buildHero(metadata);
             const breadcrumbs = this.buildBreadcrumbs(metadata, markdownPath);
+            const tocHtml = this.buildToc(toc);
+
             const bodyHtml = `
-                <div class="markdown-container" style="max-width: 1000px; margin: 0 auto; padding-bottom: 5rem;">
-                    ${breadcrumbs}
-                    <div class="markdown-body" style="padding: 0 2rem;">${html}</div>
+                <div class="markdown-layout">
+                    <aside class="markdown-sidebar">
+                        ${tocHtml}
+                    </aside>
+                    <main class="markdown-content">
+                        <div class="markdown-container">
+                            ${breadcrumbs}
+                            <div class="markdown-body">${html}</div>
+                        </div>
+                    </main>
                 </div>
             `;
 
             this.container.innerHTML = heroHtml + bodyHtml;
 
-            // Line numbers are now handled directly in the renderer in MarkdownParsing.ts
+            // Post-render: Setup Active TOC Highlighting
+            this.setupTocHighlighting();
 
         } catch (err: any) {
             console.error('Markdown Render Error:', err);
@@ -102,23 +112,69 @@ export class MarkdownViewer {
         const title = metadata.title || path.split('/').pop()?.replace('.md', '') || 'Untitled';
 
         return `
-            <div class="markdown-breadcrumbs" style="
-                padding: 1.5rem 2rem;
-                font-size: 0.85rem;
-                color: var(--text-secondary);
-                font-family: var(--font-heading);
-                text-transform: uppercase;
-                letter-spacing: 0.1em;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            ">
-                <a href="#" style="color: inherit; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='var(--accent-blue)'" onmouseout="this.style.color='inherit'">Home</a>
-                <span>/</span>
-                <span style="background: linear-gradient(to right, var(--accent-blue), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700;">${category}</span>
-                <span>/</span>
-                <span style="color: var(--text-primary); opacity: 0.8;">${title}</span>
+            <div class="markdown-breadcrumbs">
+                <a href="#" class="breadcrumb-home">Home</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-category">${category}</span>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-title">${title}</span>
             </div>
         `;
+    }
+
+    /**
+     * Builds the Table of Contents sidebar HTML.
+     */
+    private buildToc(toc: any[]): string {
+        if (!toc || toc.length === 0) return '';
+
+        const tocItems = toc.map(item => `
+            <div class="toc-item level-${item.level}" data-id="${item.id}">
+                <a href="#${item.id}" onclick="event.preventDefault(); document.getElementById('${item.id}').scrollIntoView({behavior: 'smooth'});">
+                    ${item.text}
+                </a>
+            </div>
+        `).join('');
+
+        return `
+            <div class="toc-container">
+                <div class="toc-label">Contents</div>
+                <nav class="toc-nav">
+                    ${tocItems}
+                </nav>
+            </div>
+        `;
+    }
+
+    /**
+     * Sets up the Intersection Observer to highlight the active section in the TOC.
+     */
+    private setupTocHighlighting(): void {
+        const headings = Array.from(this.container.querySelectorAll('.markdown-body h1, .markdown-body h2, .markdown-body h3'));
+        const tocItems = Array.from(this.container.querySelectorAll('.toc-item'));
+
+        if (headings.length === 0 || tocItems.length === 0) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            // Find the heading that is most "active" (intersecting the top area)
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const id = entry.target.id;
+
+                    // Clear all and set the new one
+                    tocItems.forEach(item => {
+                        item.classList.remove('active');
+                        if (item.getAttribute('data-id') === id) {
+                            item.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, {
+            rootMargin: '0px 0px -80% 0px', // Allow detection starting from the very top (0px)
+            threshold: 0.1 // Require a tiny bit of the heading to be visible
+        });
+
+        headings.forEach(h => observer.observe(h));
     }
 }

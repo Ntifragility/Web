@@ -49,12 +49,23 @@ hljs.registerLanguage('cpp', cpp);
 hljs.registerLanguage('java', java);
 hljs.registerLanguage('matlab', matlab);
 
+/*
+Lateral Floading Side bar navegation (Index)
+*/
+export interface TableOfContentsEntry {
+    id: string;
+    text: string;
+    level: number;
+}
+
 export interface ParsedPost {
     metadata: Record<string, string>;
-    html: string;
+    html: string; // HTML content
+    toc: TableOfContentsEntry[]; // Table of contents
 }
 
 export class MarkdownParsing {
+    private toc: TableOfContentsEntry[] = [];
 
     constructor() {
         this.configureMarked();
@@ -191,6 +202,18 @@ export class MarkdownParsing {
             `;
         };
 
+
+        // Heading Renderer
+        renderer.heading = (text, level) => {
+            // 1. Create an ID for the link (example "My Heading" -> "my-heading")
+            const id = text.toLowerCase().replace(/[^\w]+/g, '-');
+            // 2. Add the ID to the Table Of Contents (storing: id, text and level)
+            this.toc.push({ id, text, level });
+            // 3. Return the HTML version with the ID included so links work
+            // ex: <h2 id="my-cool-heading">My Cool Heading</h2>
+            return `<h${level} id="${id}">${text}</h${level}>`;
+        };
+
         // Obsidian Image Renderer is handled via Regex Pre-processing, 
         // but standard markdown images should also be caught if needed.
         // For now, we rely on the pre-processing step for ![[wikilinks]].
@@ -209,6 +232,7 @@ export class MarkdownParsing {
     }
 
     public parse(rawMarkdown: string, url: string = ''): ParsedPost {
+        this.toc = []; // Reset ToC count for each parse
         // 1. Front Matter Extraction
         const frontMatterRegex = /^---\n([\s\S]*?)\n---/;
         const match = rawMarkdown.match(frontMatterRegex);
@@ -275,7 +299,7 @@ export class MarkdownParsing {
         // 4. Mark Parsing
         const html = marked.parse(body);
 
-        return { metadata, html };
+        return { metadata, html, toc: [...this.toc] };
     }
 }
 
