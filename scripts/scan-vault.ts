@@ -84,10 +84,10 @@ async function scanVault(): Promise<void> {
         // Derive subtitle
         const subtitle = frontMatter.subtitle || '';
 
-        // Derive date: front matter > file modification time
+        // Derive date: front matter > file creation time (birthtime)
         const date = frontMatter.date
             ? new Date(frontMatter.date).toISOString().split('T')[0]
-            : stats.mtime.toISOString().split('T')[0];
+            : stats.birthtime.toISOString().split('T')[0];
 
         // Derive image: front matter > first image in content > default
         let image = frontMatter.image || DEFAULT_IMAGE;
