@@ -36,12 +36,23 @@ export class MarkdownViewer {
 
             const bodyHtml = `
                 ${stickyNavHtml}
+                <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle Table of Contents">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="9" y1="3" x2="9" y2="21"></line>
+                    </svg>
+                </button>
                 <div class="markdown-layout">
-                    <div class="markdown-sidebar-container">
+                    <div id="sidebar-container" class="markdown-sidebar-container">
+                        <div class="sidebar-header-mobile">
+                            <span>Contents</span>
+                            <button id="sidebar-close" class="sidebar-close">&times;</button>
+                        </div>
                         <aside class="markdown-sidebar">
                             ${tocHtml}
                         </aside>
                     </div>
+                    <div id="sidebar-overlay" class="sidebar-overlay"></div>
                     <main class="markdown-content">
                         <div class="markdown-container">
                             <div class="static-breadcrumbs">${this.buildBreadcrumbs(metadata, markdownPath)}</div>
@@ -56,6 +67,7 @@ export class MarkdownViewer {
             // Post-render: Initialize interactive features
             this.setupTocHighlighting();
             this.setupStickyHeader();
+            this.setupMobileToggles();
 
         } catch (err: any) {
             console.error('Markdown Render Error:', err);
@@ -207,5 +219,43 @@ export class MarkdownViewer {
         });
 
         headings.forEach(h => observer.observe(h));
+    }
+
+    /**
+     * Sets up click listeners for the mobile sidebar toggle and close actions.
+     */
+    private setupMobileToggles(): void {
+        const toggleBtn = this.container.querySelector('#sidebar-toggle');
+        const closeBtn = this.container.querySelector('#sidebar-close');
+        const overlay = this.container.querySelector('#sidebar-overlay');
+        const sidebar = this.container.querySelector('#sidebar-container');
+        const tocLinks = this.container.querySelectorAll('.toc-item a');
+
+        if (!toggleBtn || !sidebar || !overlay) return;
+
+        const toggle = () => {
+            sidebar.classList.toggle('is-mobile-open');
+            overlay.classList.toggle('is-visible');
+            document.body.style.overflow = sidebar.classList.contains('is-mobile-open') ? 'hidden' : '';
+        };
+
+        const close = () => {
+            sidebar.classList.remove('is-mobile-open');
+            overlay.classList.remove('is-visible');
+            document.body.style.overflow = '';
+        };
+
+        toggleBtn.addEventListener('click', toggle);
+        if (closeBtn) closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', close);
+
+        // Close sidebar when a TOC link is clicked (on mobile)
+        tocLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 1100) {
+                    close();
+                }
+            });
+        });
     }
 }
