@@ -114,8 +114,13 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Local Obsidian Vault Mirror
-public/vault/
-public/vault-harmonics/
-public/vault-main/
-.obsidian/
+# OBSIDIAN
+# Ignore everything inside the vault folder
+public/vault/*
+
+# But do NOT ignore the 'ready' subdirectory
+!public/vault/ready/
+
+# Also make sure the 'ready' folder's contents are not ignored
+!public/vault/ready/**
+

@@ -50,13 +50,14 @@ hljs.registerLanguage('java', java);
 hljs.registerLanguage('matlab', matlab);
 
 /*
-Lateral Floading Side bar navegation (Index)
+Vertical lateral floating bar (indice)
 */
 export interface TableOfContentsEntry {
     id: string;
     text: string;
     level: number;
 }
+
 
 export interface ParsedPost {
     metadata: Record<string, string>;
@@ -203,14 +204,14 @@ export class MarkdownParsing {
         };
 
 
-        // Heading Renderer
+        // Heading Renderer for the Vertical lateral floating bar (indice)
         renderer.heading = (text, level) => {
             // 1. Create an ID for the link (example "My Heading" -> "my-heading")
             const id = text.toLowerCase().replace(/[^\w]+/g, '-');
             // 2. Add the ID to the Table Of Contents (storing: id, text and level)
             this.toc.push({ id, text, level });
             // 3. Return the HTML version with the ID included so links work
-            // ex: <h2 id="my-cool-heading">My Cool Heading</h2>
+            // ex:  <h2 id="my-cool-heading">My Cool Heading</h2>
             return `<h${level} id="${id}">${text}</h${level}>`;
         };
 
