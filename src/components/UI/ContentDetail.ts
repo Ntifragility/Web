@@ -41,9 +41,9 @@ export class ContentDetail {
         const backBtn = document.createElement('button');
         backBtn.innerHTML = '← Back to Home';
         backBtn.style.position = 'fixed';
-        backBtn.style.top = '2rem';
+        backBtn.style.top = '20px';
         backBtn.style.left = '2rem';
-        backBtn.style.zIndex = '10';
+        backBtn.style.zIndex = '2100';
         backBtn.style.padding = '0.8rem 1.5rem';
         backBtn.style.background = 'var(--glass-bg)';
         backBtn.style.border = '1px solid var(--glass-border)';

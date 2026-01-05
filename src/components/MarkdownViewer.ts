@@ -30,17 +30,21 @@ export class MarkdownViewer {
 
             // Build the full view
             const heroHtml = this.buildHero(metadata);
-            const breadcrumbs = this.buildBreadcrumbs(metadata, markdownPath);
             const tocHtml = this.buildToc(toc);
+            const title = metadata.title || 'Untitled';
+            const stickyNavHtml = this.buildStickyNav(title);
 
             const bodyHtml = `
+                ${stickyNavHtml}
                 <div class="markdown-layout">
-                    <aside class="markdown-sidebar">
-                        ${tocHtml}
-                    </aside>
+                    <div class="markdown-sidebar-container">
+                        <aside class="markdown-sidebar">
+                            ${tocHtml}
+                        </aside>
+                    </div>
                     <main class="markdown-content">
                         <div class="markdown-container">
-                            ${breadcrumbs}
+                            <div class="static-breadcrumbs">${this.buildBreadcrumbs(metadata, markdownPath)}</div>
                             <div class="markdown-body">${html}</div>
                         </div>
                     </main>
@@ -49,8 +53,9 @@ export class MarkdownViewer {
 
             this.container.innerHTML = heroHtml + bodyHtml;
 
-            // Post-render: Setup Active TOC Highlighting
+            // Post-render: Initialize interactive features
             this.setupTocHighlighting();
+            this.setupStickyHeader();
 
         } catch (err: any) {
             console.error('Markdown Render Error:', err);
@@ -76,9 +81,8 @@ export class MarkdownViewer {
         const image = metadata.image || '';
         const date = metadata.date || '';
 
-        // Same styles as ContentDetail but generated from Markdown Metadata
         return `
-            <section style="
+            <section id="markdown-hero" style="
                 height: 60vh;
                 display: flex;
                 flex-direction: column;
@@ -97,6 +101,47 @@ export class MarkdownViewer {
                 ${date ? `<p style="margin-top: 1rem;  font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">${date}</p>` : ''}
             </section>
         `;
+    }
+
+    /**
+     * Builds the persistent navigation bar with a centered title.
+     */
+    private buildStickyNav(title: string): string {
+        return `
+            <div id="sticky-nav-header" class="sticky-nav-header">
+                <div class="sticky-nav-content">
+                    <div class="sticky-nav-left"></div>
+                    <div class="sticky-nav-title">${title}</div>
+                    <div class="sticky-nav-right"></div>
+                </div>
+            </div>
+        `;
+    }
+
+    /**
+     * Sets up the observer to show/hide the sticky header.
+     */
+    private setupStickyHeader(): void {
+        const hero = this.container.querySelector('#markdown-hero');
+        const stickyNav = this.container.querySelector('#sticky-nav-header');
+
+        if (!hero || !stickyNav) return;
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                // When hero is NOT intersecting (gone from top), make nav sticky
+                if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+                    stickyNav.classList.add('is-sticky');
+                } else {
+                    stickyNav.classList.remove('is-sticky');
+                }
+            });
+        }, {
+            threshold: 0,
+            rootMargin: '-80px 0px 0px 0px'
+        });
+
+        observer.observe(hero);
     }
 
     /**
@@ -156,7 +201,6 @@ export class MarkdownViewer {
         if (headings.length === 0 || tocItems.length === 0) return;
 
         const observer = new IntersectionObserver((entries) => {
-            // Find the heading that is most "active" (intersecting the top area)
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
                     const id = entry.target.id;
@@ -171,8 +215,8 @@ export class MarkdownViewer {
                 }
             });
         }, {
-            rootMargin: '0px 0px -80% 0px', // Allow detection starting from the very top (0px)
-            threshold: 0.1 // Require a tiny bit of the heading to be visible
+            rootMargin: '0px 0px -80% 0px',
+            threshold: 0.1
         });
 
         headings.forEach(h => observer.observe(h));

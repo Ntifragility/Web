@@ -16,7 +16,7 @@
     --card-bg: #121212;
     --card-border: #1e1e1e;
     /*Header Background in dark mode */
-    --detail-bg: #0a0a0a;
+    --detail-bg: var(--bg-color);
     --hero-overlay: rgba(0, 0, 0, 0.6);
 
     /* Transitions */
@@ -43,20 +43,23 @@
     --glass-border: rgba(0, 0, 0, 0.12);
     --card-bg: #ffffff;
     --card-border: #e2e8f0;
-    --detail-bg: #ffffff;
+    --detail-bg: var(--bg-color);
     /*Header Background in light mode */
     --hero-overlay: rgba(255, 255, 255, 0.05);
     /* Subtle light overlay */
 }
 
-/* Custom Theme Toggle (Pill Design) */
+/* Dark/light button toggle */
 .theme-toggle-wrap {
     position: fixed;
-    top: 2rem;
+    top: 24px;
     right: 2rem;
     z-index: 2100;
+    /* vertically centering the title: Slight dip for visual balance */
+    transform: translateY(2px);
 }
 
+/* Dark/light button toggle */
 .theme-toggle-btn {
     width: 60px;
     height: 32px;
@@ -71,6 +74,7 @@
     transition: background-color 0.3s ease;
 }
 
+/* Dark/light button toggle */
 .theme-toggle-btn .circle {
     width: 24px;
     height: 24px;
