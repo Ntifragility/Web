@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "scan": "npx ts-node --esm scripts/scan-vault.ts",
+    "scan": "npx tsx scripts/scan-vault.ts",
     "dev": "npm run scan && vite",
     "build": "npm run scan && tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "ship": "npm run scan && git add . && git commit -m \"Site update\" && git push origin master"
   },
   "dependencies": {
     "highlight.js": "^11.11.1",
@@ -26,6 +27,7 @@
     "glob": "^13.0.0",
     "gray-matter": "^4.0.3",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.0.0",
     "vite": "^4.0.0"
   }
