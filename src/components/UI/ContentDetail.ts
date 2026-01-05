@@ -39,18 +39,13 @@ export class ContentDetail {
 
         // 1. Back to Home Button
         const backBtn = document.createElement('button');
-        backBtn.innerHTML = '← Back to Home';
-        backBtn.style.position = 'fixed';
-        backBtn.style.top = '20px';
-        backBtn.style.left = '2rem';
-        backBtn.style.zIndex = '2100';
-        backBtn.style.padding = '0.8rem 1.5rem';
-        backBtn.style.background = 'var(--glass-bg)';
-        backBtn.style.border = '1px solid var(--glass-border)';
-        backBtn.style.color = 'var(--text-primary)';
-        backBtn.style.borderRadius = '30px';
-        backBtn.style.cursor = 'pointer';
-        backBtn.style.backdropFilter = 'blur(10px)';
+        backBtn.className = 'back-to-home-btn';
+        backBtn.innerHTML = `
+            <svg class="chevron-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m15 18-6-6 6-6"/>
+            </svg>
+            <span class="btn-text">Back to Home</span>
+        `;
         backBtn.onclick = () => { window.location.hash = ''; };
 
         detailView.appendChild(backBtn);

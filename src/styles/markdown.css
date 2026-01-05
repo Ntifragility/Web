@@ -10,6 +10,41 @@
     transition: var(--theme-transition);
 }
 
+/* --- HERO BANNER --- */
+.markdown-hero {
+    height: 45vh;
+    /* Reduced from 60vh */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-size: cover;
+    background-position: center;
+    width: 100%;
+    margin-bottom: 2rem;
+    position: relative;
+    padding: 0 2rem;
+}
+
+.markdown-hero-title {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    line-height: 1.1;
+}
+
+.markdown-hero-subtitle {
+    font-size: 1.5rem;
+    opacity: 0.9;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    max-width: 800px;
+}
+
+.markdown-hero-date {
+    display: none;
+}
+
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3 {
@@ -629,4 +664,52 @@ table.hljs-ln td {
 .markdown-body .task-list-item input[type="checkbox"] {
     margin-top: 6px;
     accent-color: var(--accent-blue);
+}
+
+@media (max-width: 768px) {
+    .markdown-hero {
+        height: auto !important;
+        /* Shrink to fit text */
+        min-height: 150px;
+        padding: 5rem 1.5rem 1.5rem 1.5rem !important;
+        /* Top padding clears nav buttons */
+        margin-bottom: 0 !important;
+    }
+
+    .static-breadcrumbs {
+        margin-top: 0 !important;
+    }
+
+    .markdown-breadcrumbs {
+        display: none !important;
+    }
+
+    /* Breadcrumbs removed, so no negative margin needed anymore. Content flows directly. */
+
+    /* Date hidden globally, removed local rule */
+
+    .markdown-body h1,
+    .markdown-body h2,
+    .markdown-body h3 {
+        margin-top: 1rem;
+        /* Reduced from 2.5rem */
+    }
+
+    .markdown-hero-title {
+        font-size: 2rem;
+        /* Slightly smaller to fit */
+    }
+
+    .markdown-hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .sticky-nav-title {
+        font-size: 1rem;
+        padding: 0 1rem;
+    }
+
+    .sticky-nav-content {
+        grid-template-columns: 80px 1fr 80px;
+    }
 }

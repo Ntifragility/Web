@@ -82,23 +82,10 @@ export class MarkdownViewer {
         const date = metadata.date || '';
 
         return `
-            <section id="markdown-hero" style="
-                height: 60vh;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                text-align: center;
-                background-image: linear-gradient(var(--hero-overlay), var(--hero-overlay)), url('${image}');
-                background-size: cover;
-                background-position: center;
-                width: 100%;
-                margin-bottom: 2rem;
-                position: relative;
-            ">
-                <h1 style="font-size: 4rem; margin-bottom: 1rem; text-shadow: 0 4px 12px rgba(0,0,0,0.5);">${title}</h1>
-                <p style="font-size: 1.5rem; opacity: 0.9; text-shadow: 0 2px 8px rgba(0,0,0,0.5);">${subtitle}</p>
-                ${date ? `<p style="margin-top: 1rem;  font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">${date}</p>` : ''}
+            <section id="markdown-hero" class="markdown-hero" style="background-image: linear-gradient(var(--hero-overlay), var(--hero-overlay)), url('${image}');">
+                <h1 class="markdown-hero-title">${title}</h1>
+                <p class="markdown-hero-subtitle">${subtitle}</p>
+                ${date ? `<p class="markdown-hero-date">${date}</p>` : ''}
             </section>
         `;
     }

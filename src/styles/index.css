@@ -50,13 +50,56 @@
 }
 
 /* Dark/light button toggle */
-.theme-toggle-wrap {
+.theme-toggle-wrap,
+.back-to-home-btn {
     position: fixed;
-    top: 24px;
-    right: 2rem;
     z-index: 2100;
-    /* vertically centering the title: Slight dip for visual balance */
-    transform: translateY(2px);
+}
+
+.back-to-home-btn {
+    top: 19px;
+    /* Centers 42px height in 80px header (40 - 21) */
+    left: 2rem;
+    height: 42px;
+    padding: 0 1.5rem;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 30px;
+    color: var(--text-primary);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.chevron-left {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+}
+
+.back-to-home-btn:hover .chevron-left {
+    transform: translateX(-4px);
+}
+
+.back-to-home-btn:hover {
+    background: var(--glass-border);
+    transform: translateY(-2px);
+    border-color: var(--accent-blue);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle-wrap {
+    top: 24px;
+    /* Centers 32px height in 80px header (40 - 16) */
+    right: 2rem;
+    /* Transformation removed to strictly use Top */
 }
 
 /* Dark/light button toggle */
@@ -357,6 +400,44 @@ a {
 
     .mobile-menu-btn {
         display: flex;
+    }
+
+    .mobile-menu-btn {
+        display: flex;
+    }
+
+    .back-to-home-btn {
+        top: 15px;
+        width: 42px;
+        height: 42px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+        left: 1rem;
+    }
+
+    .back-to-home-btn .btn-text {
+        display: none;
+        /* Hide text on mobile */
+    }
+
+    .back-to-home-btn .chevron-left {
+        width: 24px;
+        height: 24px;
+    }
+
+    .theme-toggle-wrap {
+        top: 17px;
+        /* Align center with 42px button (15+21 = 36 center | 17+19 = 36 center) */
+        right: 1rem;
+        transform: none;
+        /* Reset vertical dip on mobile */
+    }
+
+    .theme-toggle-btn {
+        height: 38px;
+        width: 68px;
+        /* Slightly larger toggle for touch */
     }
 }
 
