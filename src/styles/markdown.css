@@ -103,19 +103,28 @@
         left: -100%;
         /* Hidden by default */
         width: 100%;
+        /* Full width as requested */
         height: 100vh;
         z-index: 3000;
         background: var(--bg-color);
         border-right: 1px solid rgba(255, 255, 255, 0.1);
         padding: 0;
-        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.4s;
         display: flex;
         flex-direction: column;
-        box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+        box-shadow: none;
+        /* No shadow when closed to prevent bleed */
+        visibility: hidden;
+        /* Prevent interaction and bleed */
+        pointer-events: none;
     }
 
     .markdown-sidebar-container.is-mobile-open {
         transform: translateX(100%);
+        box-shadow: 20px 0 50px rgba(0, 0, 0, 0.5);
+        /* Shadow only when open */
+        visibility: visible;
+        pointer-events: auto;
     }
 
     .markdown-sidebar {
