@@ -292,100 +292,103 @@ a {
     pointer-events: none;
 }
 
-/* Mobile Navigation Styles */
-.mobile-menu-btn {
-    display: none;
-    flex-direction: column;
-    gap: 6px;
-    cursor: pointer;
-    z-index: 1001;
-    padding: 10px;
+/* Main Navigation */
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
 }
 
-.mobile-menu-btn span {
+.nav-links-desktop {
+    display: flex;
+    list-style: none;
+    gap: 2.5rem;
+    margin: 0;
+    padding: 0;
+}
+
+/* Hamburger Button - Hidden on Desktop */
+.hamburger-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001;
+}
+
+.hamburger-btn span {
     display: block;
-    width: 25px;
+    width: 24px;
     height: 2px;
     background-color: var(--text-primary);
     transition: all 0.3s ease;
 }
 
-.sidebar {
-    position: fixed;
-    top: 0;
-    right: -175px;
-    /* Match width */
-    width: 175px;
-    /* Lateral navigation bar WIDTH */
-    height: 100vh;
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    padding-top: 100px;
-    /* Slightly more top padding for rail look */
-    background: var(--bg-color);
-    /* Lateral navigation bar COLOR */
-    /* Solid Charcoal */
-    transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-    border-left: 1px solid #1e1e1e;
-    /* Subtle border for definition */
+.hamburger-btn.active span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
 }
 
-.sidebar.active {
-    right: 0;
+.hamburger-btn.active span:nth-child(2) {
+    opacity: 0;
 }
 
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    text-align: center;
-    width: 100%;
+.hamburger-btn.active span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
 }
 
-.sidebar ul li {
-    margin: 1.5rem 0;
-}
-
-.sidebar ul li a {
-    font-size: 1.2rem;
-    text-transform: none;
-    /* Sentence case */
-    letter-spacing: 0.1em;
-}
-
-.sidebar-overlay {
+/* Mobile Menu - Full Screen Overlay */
+.mobile-menu {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 999;
+    height: 100vh;
+    background: var(--bg-color);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-.sidebar-overlay.active {
+.mobile-menu.active {
     opacity: 1;
     visibility: visible;
 }
 
-/* Hamburger Animation */
-.mobile-menu-btn.active span:nth-child(1) {
-    transform: translateY(8px) rotate(45deg);
+.mobile-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
 }
 
-.mobile-menu-btn.active span:nth-child(2) {
-    opacity: 0;
+.mobile-menu ul li {
+    margin: 2rem 0;
 }
 
-.mobile-menu-btn.active span:nth-child(3) {
-    transform: translateY(-8px) rotate(-45deg);
+.mobile-nav-link {
+    font-size: 1.5rem;
+    font-family: var(--font-heading);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.mobile-nav-link:hover {
+    color: var(--accent-color, #4a9eff);
 }
 
 /* Media Query for Mobile */
@@ -394,11 +397,7 @@ a {
         display: none !important;
     }
 
-    .mobile-menu-btn {
-        display: flex;
-    }
-
-    .mobile-menu-btn {
+    .hamburger-btn {
         display: flex;
     }
 

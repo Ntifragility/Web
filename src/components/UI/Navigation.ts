@@ -1,6 +1,6 @@
 /**
  * @file Navigation.ts
- * @description Sidebar navigation and interaction handling.
+ * @description Navigation with desktop links and mobile hamburger menu.
  */
 import { navigationData } from '@/data/navigation';
 
@@ -20,174 +20,59 @@ export class Navigation {
             .join('');
 
         const mobileLinks = navigationData.links
-            .map(link => `<li><a href="${link.href}" class="sidebar-link nav-link-item" style="font-family: var(--font-heading);">${link.label}</a></li>`)
+            .map(link => `<li><a href="${link.href}" class="mobile-nav-link">${link.label}</a></li>`)
             .join('');
 
         this.container.innerHTML = `
-            <nav style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 1rem 2rem;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 100;
-            ">
+            <nav class="main-nav">
                 <div class="logo" style="font-weight: 600; font-size: 1.4rem; letter-spacing: -0.02em; font-family: var(--font-heading);">
                     ${navigationData.logo}
                 </div>
                 
                 <!-- Desktop Menu -->
-                <ul class="nav-links-desktop" style="
-                    display: flex;
-                    list-style: none;
-                    gap: 2.5rem;
-                    margin: 0;
-                    padding: 0;
-                ">
+                <ul class="nav-links-desktop">
                     ${desktopLinks}
                 </ul>
 
-                <!-- Hamburger Button -->
-                <div id="mobile-toggle" class="mobile-menu-btn">
+                <!-- Mobile Hamburger -->
+                <button id="hamburger-btn" class="hamburger-btn" aria-label="Toggle menu">
                     <span></span>
                     <span></span>
                     <span></span>
-                </div>
+                </button>
             </nav>
 
-            <!-- Mobile Sidebar -->
-            <div id="sidebar-overlay" class="sidebar-overlay"></div>
-            <div id="sidebar" class="sidebar">
+            <!-- Mobile Menu Overlay -->
+            <div id="mobile-menu" class="mobile-menu">
                 <ul>
                     ${mobileLinks}
                 </ul>
             </div>
         `;
 
-        this.setupEventListeners();
+        this.setupMobileMenu();
     }
 
-    private setupEventListeners(): void {
-        const toggle = document.getElementById('mobile-toggle');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
+    private setupMobileMenu(): void {
+        const hamburger = document.getElementById('hamburger-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
 
-        if (!toggle || !sidebar || !overlay) return;
+        if (!hamburger || !mobileMenu) return;
 
-        let startX = 0;
-        let currentX = 0;
-        let isDragging = false;
-        const dragThreshold = 50; // Pixels to drag before closing
-
-        const openMenu = () => {
-            toggle.classList.add('active');
-            sidebar.classList.add('active');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            sidebar.style.transform = ''; // Clear any drag transforms
-        };
-
-        const closeMenu = () => {
-            toggle.classList.remove('active');
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-            document.body.style.overflow = 'auto';
-            sidebar.style.transform = ''; // Clear any drag transforms
-        };
-
-        const toggleMenu = () => {
-            if (sidebar.classList.contains('active')) {
-                closeMenu();
-            } else {
-                openMenu();
-            }
-        };
-
-        // Click handlers
-        toggle.addEventListener('click', toggleMenu);
-        overlay.addEventListener('click', closeMenu);
-
-        // Manual Anchor Scrolling for both Sidebar and Desktop links
-        const navLinks = document.querySelectorAll('.nav-link-item');
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                const href = (link as HTMLAnchorElement).getAttribute('href');
-                if (href && href.startsWith('#')) {
-                    const targetId = href.substring(1);
-                    const targetElement = document.getElementById(targetId);
-
-                    if (targetElement) {
-                        e.preventDefault();
-
-                        // CRITICAL: Disable scroll-snap BEFORE closing sidebar
-                        // This prevents the snap from fighting the scroll
-                        const htmlEl = document.documentElement;
-                        const bodyEl = document.body;
-                        htmlEl.style.scrollSnapType = 'none';
-                        bodyEl.style.scrollSnapType = 'none';
-
-                        closeMenu(); // Close sidebar (restores overflow: auto)
-
-                        // Wait for sidebar animation to complete (400ms matches CSS transition)
-                        setTimeout(() => {
-                            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            history.pushState(null, '', href);
-
-                            // Re-enable scroll-snap after scroll animation completes
-                            setTimeout(() => {
-                                htmlEl.style.scrollSnapType = 'y mandatory';
-                                bodyEl.style.scrollSnapType = 'y mandatory';
-                            }, 1000);
-                        }, 400);
-                    }
-                }
-            });
+        // Toggle menu on hamburger click
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
         });
 
-        // Swipe/Drag to close logic
-        const startDrag = (x: number) => {
-            if (!sidebar.classList.contains('active')) return;
-            startX = x;
-            isDragging = true;
-            sidebar.style.transition = 'none'; // Instant feedback
-        };
-
-        const moveDrag = (x: number) => {
-            if (!isDragging) return;
-            currentX = x;
-            const deltaX = Math.max(0, currentX - startX); // Only drag to the right
-            sidebar.style.transform = `translateX(${deltaX}px)`;
-
-            // Fade out overlay slightly as we drag
-            const opacity = Math.max(0, 1 - (deltaX / 150));
-            overlay.style.opacity = opacity.toString();
-        };
-
-        const endDrag = () => {
-            if (!isDragging) return;
-            isDragging = false;
-            sidebar.style.transition = ''; // Restore CSS transitions
-            overlay.style.opacity = ''; // Restore CSS transitions
-
-            const deltaX = currentX - startX;
-            if (deltaX > dragThreshold) {
-                closeMenu();
-            } else {
-                sidebar.style.transform = 'translateX(0)';
-            }
-        };
-
-        // Touch events
-        sidebar.addEventListener('touchstart', (e) => startDrag(e.touches[0].clientX), { passive: true });
-        window.addEventListener('touchmove', (e) => moveDrag(e.touches[0].clientX), { passive: false });
-        window.addEventListener('touchend', endDrag);
-
-        // Mouse events (Desktop testing)
-        sidebar.addEventListener('mousedown', (e) => startDrag(e.clientX));
-        window.addEventListener('mousemove', (e) => moveDrag(e.clientX));
-        window.addEventListener('mouseup', endDrag);
+        // Close menu when clicking a link - let native anchor behavior work
+        const mobileLinks = mobileMenu.querySelectorAll('.mobile-nav-link');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                // Just close the menu - native <a href="#about"> will handle scroll
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            });
+        });
     }
 }
