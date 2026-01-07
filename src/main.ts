@@ -56,6 +56,18 @@ const handleRoute = () => {
         contentDetail.hide();
         if (contentWrapper) contentWrapper.style.display = 'block';
 
+        // Anchor Jumping Logic: Scroll to section if hash exists
+        if (hash && hash !== '#') {
+            const targetId = hash.substring(1).split('&')[0]; // Clean up for potential params
+            const targetElement = document.getElementById(targetId);
+            if (targetElement) {
+                // Short delay to ensure browser has layouted the visible content-wrapper
+                setTimeout(() => {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        }
+
         // Ensure scene is visible if we're at the top
         if (canvasContainer && window.scrollY < 100) {
             canvasContainer.classList.remove('fade-out');

@@ -16,11 +16,11 @@ export class Navigation {
 
     private render(): void {
         const desktopLinks = navigationData.links
-            .map(link => `<li><a href="${link.href}" style="font-size: 0.95rem; text-transform: none; letter-spacing: 0;">${link.label}</a></li>`)
+            .map(link => `<li><a href="${link.href}" class="nav-link-item" style="font-size: 0.95rem; text-transform: none; letter-spacing: 0;">${link.label}</a></li>`)
             .join('');
 
         const mobileLinks = navigationData.links
-            .map(link => `<li><a href="${link.href}" class="sidebar-link" style="font-family: var(--font-heading);">${link.label}</a></li>`)
+            .map(link => `<li><a href="${link.href}" class="sidebar-link nav-link-item" style="font-family: var(--font-heading);">${link.label}</a></li>`)
             .join('');
 
         this.container.innerHTML = `
@@ -74,7 +74,6 @@ export class Navigation {
         const toggle = document.getElementById('mobile-toggle');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
-        const links = document.querySelectorAll('.sidebar-link');
 
         if (!toggle || !sidebar || !overlay) return;
 
@@ -110,7 +109,43 @@ export class Navigation {
         // Click handlers
         toggle.addEventListener('click', toggleMenu);
         overlay.addEventListener('click', closeMenu);
-        links.forEach(link => link.addEventListener('click', closeMenu));
+
+        // Manual Anchor Scrolling for both Sidebar and Desktop links
+        const navLinks = document.querySelectorAll('.nav-link-item');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                const href = (link as HTMLAnchorElement).getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    const targetId = href.substring(1);
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        e.preventDefault();
+
+                        // CRITICAL: Disable scroll-snap BEFORE closing sidebar
+                        // This prevents the snap from fighting the scroll
+                        const htmlEl = document.documentElement;
+                        const bodyEl = document.body;
+                        htmlEl.style.scrollSnapType = 'none';
+                        bodyEl.style.scrollSnapType = 'none';
+
+                        closeMenu(); // Close sidebar (restores overflow: auto)
+
+                        // Wait for sidebar animation to complete (400ms matches CSS transition)
+                        setTimeout(() => {
+                            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            history.pushState(null, '', href);
+
+                            // Re-enable scroll-snap after scroll animation completes
+                            setTimeout(() => {
+                                htmlEl.style.scrollSnapType = 'y mandatory';
+                                bodyEl.style.scrollSnapType = 'y mandatory';
+                            }, 1000);
+                        }, 400);
+                    }
+                }
+            });
+        });
 
         // Swipe/Drag to close logic
         const startDrag = (x: number) => {

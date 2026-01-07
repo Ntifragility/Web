@@ -64,8 +64,6 @@
     padding: 0 1.5rem;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
     border-radius: 30px;
     color: var(--text-primary);
     font-family: var(--font-body);
@@ -234,8 +232,6 @@ a {
 /* Glassmorphism Utility */
 .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     border: 1px solid var(--glass-border);
 }
 
