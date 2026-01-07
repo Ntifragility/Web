@@ -182,9 +182,9 @@
     left: 20px;
     width: 44px;
     height: 44px;
-    background: rgba(255, 255, 255, 0.1);
-    /* Slightly more opaque since blur is gone */
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: var(--bg-color);
+    /* Solid background */
+    border: 1px solid rgba(128, 128, 128, 0.3);
     border-radius: 10px;
     color: var(--text-primary);
     display: none;
@@ -193,8 +193,19 @@
     justify-content: center;
     cursor: pointer;
     z-index: 2100;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
+    /* Hidden by default until scrolled */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Show only when scrolled (hero gone) */
+.sidebar-toggle.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
 }
 
 @media (max-width: 1100px) {
@@ -204,8 +215,9 @@
 }
 
 .sidebar-toggle:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--bg-color);
     transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-toggle svg {

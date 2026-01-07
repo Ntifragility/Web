@@ -118,21 +118,28 @@ export class MarkdownViewer {
     }
 
     /**
-     * Sets up the observer to show/hide the sticky header.
+     * Sets up the observer to show/hide the sticky header and sidebar toggle.
      */
     private setupStickyHeader(): void {
         const hero = this.container.querySelector('#markdown-hero');
         const stickyNav = this.container.querySelector('#sticky-nav-header');
+        const sidebarToggle = this.container.querySelector('#sidebar-toggle') as HTMLElement;
 
         if (!hero || !stickyNav) return;
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
-                // When hero is NOT intersecting (gone from top), make nav sticky
+                // When hero is NOT intersecting (gone from top), make nav sticky and show toggle
                 if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
                     stickyNav.classList.add('is-sticky');
+                    if (sidebarToggle) {
+                        sidebarToggle.classList.add('is-visible');
+                    }
                 } else {
                     stickyNav.classList.remove('is-sticky');
+                    if (sidebarToggle) {
+                        sidebarToggle.classList.remove('is-visible');
+                    }
                 }
             });
         }, {
