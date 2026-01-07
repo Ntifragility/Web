@@ -37,6 +37,32 @@ export class ContentDetail {
         detailView.style.overflowY = 'auto';
         detailView.style.padding = '0';
 
+        // Mobile hamburger menu (visible only on mobile via CSS)
+        const mobileMenuHTML = `
+            <button id="mobile-menu-hamburger" class="mobile-menu-hamburger" aria-label="Open menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div id="mobile-menu-overlay" class="mobile-menu-overlay">
+                <div class="mobile-menu-content">
+                    <button id="mobile-home-btn" class="mobile-menu-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        <span>Home</span>
+                    </button>
+                    <button id="mobile-contents-btn" class="mobile-menu-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+                        <span>Contents</span>
+                    </button>
+                    <button id="mobile-theme-btn" class="mobile-menu-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                        <span>Theme</span>
+                    </button>
+                </div>
+            </div>
+        `;
+        detailView.insertAdjacentHTML('beforeend', mobileMenuHTML);
+
         // 1. Back to Home Button
         const backBtn = document.createElement('button');
         backBtn.className = 'back-to-home-btn';
@@ -107,6 +133,9 @@ export class ContentDetail {
 
             const viewer = new MarkdownViewer(contentArea);
             viewer.render(data.markdownPath);
+
+            // Setup mobile menu event listeners
+            this.setupMobileMenu(detailView, tm, updateIcons);
             return;
         }
 
@@ -173,5 +202,64 @@ export class ContentDetail {
 
     public hide(): void {
         this.container.innerHTML = '';
+    }
+
+    /**
+     * Sets up the mobile hamburger menu for post pages.
+     */
+    private setupMobileMenu(detailView: HTMLElement, tm: any, updateIcons: () => void): void {
+        const hamburger = detailView.querySelector('#mobile-menu-hamburger');
+        const overlay = detailView.querySelector('#mobile-menu-overlay');
+        const homeBtn = detailView.querySelector('#mobile-home-btn');
+        const contentsBtn = detailView.querySelector('#mobile-contents-btn');
+        const themeBtn = detailView.querySelector('#mobile-theme-btn');
+
+        if (!hamburger || !overlay) return;
+
+        const closeMenu = () => {
+            hamburger.classList.remove('active');
+            overlay.classList.remove('active');
+        };
+
+        // Toggle menu
+        hamburger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            hamburger.classList.toggle('active');
+            overlay.classList.toggle('active');
+        });
+
+        // Home button
+        homeBtn?.addEventListener('click', () => {
+            closeMenu();
+            window.location.hash = '';
+        });
+
+        // Contents button - trigger the existing sidebar toggle
+        contentsBtn?.addEventListener('click', () => {
+            closeMenu();
+            // Find and click the existing sidebar-toggle button
+            const sidebarToggle = detailView.querySelector('#sidebar-toggle') as HTMLButtonElement;
+            if (sidebarToggle) {
+                sidebarToggle.click();
+            }
+        });
+
+        // Theme button - trigger the existing theme toggle
+        themeBtn?.addEventListener('click', () => {
+            closeMenu();
+            if (tm) {
+                detailView.classList.remove(tm.getThemeClass());
+                tm.toggleTheme();
+                detailView.classList.add(tm.getThemeClass());
+                updateIcons();
+            }
+        });
+
+        // Close on click outside
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                closeMenu();
+            }
+        });
     }
 }

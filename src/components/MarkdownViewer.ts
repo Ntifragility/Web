@@ -234,8 +234,8 @@ export class MarkdownViewer {
     private setupMobileToggles(): void {
         const toggleBtn = this.container.querySelector('#sidebar-toggle');
         const closeBtn = this.container.querySelector('#sidebar-close');
-        const overlay = this.container.querySelector('#sidebar-overlay');
-        const sidebar = this.container.querySelector('#sidebar-container');
+        const overlay = this.container.querySelector('#sidebar-overlay') as HTMLElement;
+        const sidebar = this.container.querySelector('#sidebar-container') as HTMLElement;
         const tocLinks = this.container.querySelectorAll('.toc-item a');
 
         if (!toggleBtn || !sidebar || !overlay) return;
@@ -264,5 +264,48 @@ export class MarkdownViewer {
                 }
             });
         });
+
+        // Swipe/Drag to close sidebar (swipe left)
+        let startX = 0;
+        let currentX = 0;
+        let isDragging = false;
+        const dragThreshold = 50;
+
+        const startDrag = (x: number) => {
+            if (!sidebar.classList.contains('is-mobile-open')) return;
+            startX = x;
+            isDragging = true;
+            sidebar.style.transition = 'none';
+        };
+
+        const moveDrag = (x: number) => {
+            if (!isDragging) return;
+            currentX = x;
+            const deltaX = Math.min(0, currentX - startX); // Only drag to the left (negative)
+            const resistance = 0.5; // Drag feels 'slower'
+            sidebar.style.transform = `translateX(calc(100% + ${deltaX * resistance}px))`;
+        };
+
+        const endDrag = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            sidebar.style.transition = '';
+            sidebar.style.transform = '';
+
+            const deltaX = currentX - startX;
+            if (deltaX < -dragThreshold) {
+                close();
+            }
+        };
+
+        // Touch events
+        sidebar.addEventListener('touchstart', (e: TouchEvent) => startDrag(e.touches[0].clientX), { passive: true });
+        window.addEventListener('touchmove', (e: TouchEvent) => moveDrag(e.touches[0].clientX), { passive: false } as EventListenerOptions);
+        window.addEventListener('touchend', endDrag);
+
+        // Mouse events (for desktop testing)
+        sidebar.addEventListener('mousedown', (e: MouseEvent) => startDrag(e.clientX));
+        window.addEventListener('mousemove', (e: MouseEvent) => moveDrag(e.clientX));
+        window.addEventListener('mouseup', endDrag);
     }
 }
