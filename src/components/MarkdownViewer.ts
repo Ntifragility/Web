@@ -265,46 +265,108 @@ export class MarkdownViewer {
             });
         });
 
-        // Swipe/Drag to close sidebar (swipe left)
+        // Swipe/Drag to close (swipe left) OR open (edge swipe right)
         let startX = 0;
         let currentX = 0;
         let isDragging = false;
+        let isOpening = false;
         const dragThreshold = 50;
+        const edgeThreshold = 30; // Px from left edge to start swipe-open
 
-        const startDrag = (x: number) => {
-            if (!sidebar.classList.contains('is-mobile-open')) return;
-            startX = x;
-            isDragging = true;
-            sidebar.style.transition = 'none';
+        const startDrag = (x: number, isSidebarEvent: boolean) => {
+            const isOpen = sidebar.classList.contains('is-mobile-open');
+
+            if (isOpen && isSidebarEvent) {
+                // Start closing drag
+                isOpening = false;
+                startX = x;
+                isDragging = true;
+                sidebar.style.transition = 'none';
+            } else if (!isOpen && x <= edgeThreshold) {
+                // Start opening drag (from edge)
+                isOpening = true;
+                startX = x;
+                isDragging = true;
+                sidebar.style.transition = 'none';
+
+                // Prepare visuals for opening
+                sidebar.style.visibility = 'visible';
+                overlay.classList.add('is-visible'); // Show overlay container
+                overlay.style.opacity = '0'; // Start invisible
+            }
         };
 
         const moveDrag = (x: number) => {
             if (!isDragging) return;
             currentX = x;
-            const deltaX = Math.min(0, currentX - startX); // Only drag to the left (negative)
-            const resistance = 0.5; // Drag feels 'slower'
-            sidebar.style.transform = `translateX(calc(100% + ${deltaX * resistance}px))`;
+            const resistance = 0.5;
+
+            if (isOpening) {
+                const deltaX = Math.max(0, currentX - startX); // Only drag right
+                sidebar.style.transform = `translateX(${deltaX * resistance}px)`;
+
+                // Fade in overlay
+                const opacity = Math.min(1, (deltaX * resistance) / 200);
+                overlay.style.opacity = opacity.toString();
+            } else {
+                // Closing dragging
+                const deltaX = Math.min(0, currentX - startX); // Only drag left
+                sidebar.style.transform = `translateX(calc(100% + ${deltaX * resistance}px))`;
+            }
         };
 
         const endDrag = () => {
             if (!isDragging) return;
             isDragging = false;
+            const deltaX = currentX - startX;
+
+            // Clean up inline styles
             sidebar.style.transition = '';
             sidebar.style.transform = '';
+            sidebar.style.visibility = '';
+            overlay.style.opacity = '';
 
-            const deltaX = currentX - startX;
-            if (deltaX < -dragThreshold) {
-                close();
+            if (isOpening) {
+                if (deltaX * 0.5 > dragThreshold) {
+                    // Complete opening
+                    sidebar.classList.add('is-mobile-open');
+                    overlay.classList.add('is-visible');
+                    document.body.style.overflow = 'hidden';
+                } else {
+                    // Cancel opening
+                    overlay.classList.remove('is-visible');
+                }
+            } else {
+                // Closing
+                if (deltaX < -dragThreshold) {
+                    close();
+                } else {
+                    // Cancel closing (snap back)
+                    // Nothing to do, classes remain
+                }
             }
         };
 
         // Touch events
-        sidebar.addEventListener('touchstart', (e: TouchEvent) => startDrag(e.touches[0].clientX), { passive: true });
+        sidebar.addEventListener('touchstart', (e: TouchEvent) => startDrag(e.touches[0].clientX, true), { passive: true });
+        window.addEventListener('touchstart', (e: TouchEvent) => {
+            // Only trigger window touch if not touching sidebar (handled above) 
+            // OR if sidebar is closed (handled here for edge swipe)
+            if (!sidebar.contains(e.target as Node)) {
+                startDrag(e.touches[0].clientX, false);
+            }
+        }, { passive: true });
+
         window.addEventListener('touchmove', (e: TouchEvent) => moveDrag(e.touches[0].clientX), { passive: false } as EventListenerOptions);
         window.addEventListener('touchend', endDrag);
 
         // Mouse events (for desktop testing)
-        sidebar.addEventListener('mousedown', (e: MouseEvent) => startDrag(e.clientX));
+        sidebar.addEventListener('mousedown', (e: MouseEvent) => startDrag(e.clientX, true));
+        window.addEventListener('mousedown', (e: MouseEvent) => {
+            if (!sidebar.contains(e.target as Node)) {
+                startDrag(e.clientX, false);
+            }
+        });
         window.addEventListener('mousemove', (e: MouseEvent) => moveDrag(e.clientX));
         window.addEventListener('mouseup', endDrag);
     }

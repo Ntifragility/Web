@@ -172,6 +172,11 @@
         justify-content: center;
         cursor: pointer;
     }
+
+    /* Hide the inner TOC label since we have the mobile header */
+    .toc-label {
+        display: none;
+    }
 }
 
 /* Floating Sidebar Toggle Button */

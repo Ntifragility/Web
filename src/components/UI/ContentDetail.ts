@@ -54,10 +54,14 @@ export class ContentDetail {
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
                         <span>Contents</span>
                     </button>
-                    <button id="mobile-theme-btn" class="mobile-menu-item">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                        <span>Theme</span>
-                    </button>
+                    <div id="mobile-theme-container" class="mobile-menu-item mobile-theme-item" style="border: none; background: none; padding: 0;">
+                        <div class="theme-toggle-btn" id="mobile-theme-toggle" style="margin: 0 auto;">
+                            <div class="circle">
+                                <svg class="moon-icon" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
+                                <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -99,14 +103,26 @@ export class ContentDetail {
             // Update icons based on theme
             const updateIcons = () => {
                 const isDark = detailView.classList.contains('dark-theme');
-                const moon = toggleWrapper.querySelector('.moon-icon') as HTMLElement;
-                const sun = toggleWrapper.querySelector('.sun-icon') as HTMLElement;
+
+                // Update Desktop Toggle
+                const desktopMoon = toggleWrapper.querySelector('.moon-icon') as HTMLElement;
+                const desktopSun = toggleWrapper.querySelector('.sun-icon') as HTMLElement;
+
+                // Update Mobile Toggle (find it inside detailView)
+                const mobileBtn = detailView.querySelector('#mobile-theme-toggle');
+                const mobileMoon = mobileBtn?.querySelector('.moon-icon') as HTMLElement;
+                const mobileSun = mobileBtn?.querySelector('.sun-icon') as HTMLElement;
+
                 if (isDark) {
-                    moon.style.display = 'block';
-                    sun.style.display = 'none';
+                    if (desktopMoon) desktopMoon.style.display = 'block';
+                    if (desktopSun) desktopSun.style.display = 'none';
+                    if (mobileMoon) mobileMoon.style.display = 'block';
+                    if (mobileSun) mobileSun.style.display = 'none';
                 } else {
-                    moon.style.display = 'none';
-                    sun.style.display = 'block';
+                    if (desktopMoon) desktopMoon.style.display = 'none';
+                    if (desktopSun) desktopSun.style.display = 'block';
+                    if (mobileMoon) mobileMoon.style.display = 'none';
+                    if (mobileSun) mobileSun.style.display = 'block';
                 }
             };
 
@@ -212,7 +228,7 @@ export class ContentDetail {
         const overlay = detailView.querySelector('#mobile-menu-overlay');
         const homeBtn = detailView.querySelector('#mobile-home-btn');
         const contentsBtn = detailView.querySelector('#mobile-contents-btn');
-        const themeBtn = detailView.querySelector('#mobile-theme-btn');
+        const themeBtn = detailView.querySelector('#mobile-theme-toggle');
 
         if (!hamburger || !overlay) return;
 
