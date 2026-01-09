@@ -1,5 +1,14 @@
 [
   {
+    "id": "blueprint-verify",
+    "title": "Plotting Blueprint Verification",
+    "subtitle": "Testing automated engineering plots",
+    "date": "2026-01-09",
+    "image": "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=2070",
+    "markdownPath": "/vault/ready/blueprint-verify.md",
+    "category": "General"
+  },
+  {
     "id": "utils-chart-dynamic-test",
     "title": "Interactive Transient Current",
     "subtitle": "Testing Dynamic Chart.js with Sliders",

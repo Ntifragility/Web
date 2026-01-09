@@ -183,14 +183,15 @@ export class MarkdownParsing {
             const validLang = language && hljs.getLanguage(language) ? language : 'plaintext';
 
             // Chart.js Integration
-            if (language === 'chart' || language === 'chart:dynamic') {
+            if (language === 'chart' || language === 'chart:dynamic' || language === 'blueprint:plot') {
                 const chartId = `chart-${Math.random().toString(36).substr(2, 9)}`;
 
-                if (language === 'chart:dynamic') {
-                    // For dynamic charts, we store the raw JS code in a base64 string
+                if (language === 'chart:dynamic' || language === 'blueprint:plot') {
+                    // For dynamic/blueprint charts, we store the raw configuration in a base64 string
                     const encodedCode = btoa(unescape(encodeURIComponent(code)));
+                    const type = language === 'blueprint:plot' ? 'blueprint' : 'dynamic';
                     return `
-                        <div class="dynamic-chart-wrapper" id="${chartId}" data-code="${encodedCode}">
+                        <div class="dynamic-chart-wrapper" id="${chartId}" data-code="${encodedCode}" data-type="${type}">
                             <div class="dynamic-chart-loading">Initializing Interactive Plot...</div>
                         </div>
                     `;
@@ -259,7 +260,8 @@ export class MarkdownParsing {
     public parse(rawMarkdown: string, url: string = ''): ParsedPost {
         this.toc = []; // Reset ToC count for each parse
         // 1. Front Matter Extraction
-        const frontMatterRegex = /^---\n([\s\S]*?)\n---/;
+        // 1. Front Matter Extraction (Lenient with CRLF and spaces)
+        const frontMatterRegex = /^---\s*\r?\n([\s\S]*?)\r?\n---\s*/;
         const match = rawMarkdown.match(frontMatterRegex);
 
         let metadata: Record<string, string> = {};
@@ -267,7 +269,7 @@ export class MarkdownParsing {
 
         if (match) {
             const yamlBlock = match[1];
-            yamlBlock.split('\n').forEach(line => {
+            yamlBlock.split(/\r?\n/).forEach(line => {
                 const [key, ...valueParts] = line.split(':');
                 if (key && valueParts) {
                     metadata[key.trim()] = valueParts.join(':').trim();

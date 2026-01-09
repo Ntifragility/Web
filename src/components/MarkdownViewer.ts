@@ -410,28 +410,20 @@ export class MarkdownViewer {
         const containers = this.container.querySelectorAll('.dynamic-chart-wrapper');
 
         containers.forEach((container) => {
-            // Retrieve the Base64 encoded JavaScript logic from the parser
-            const encodedCode = container.getAttribute('data-code');
-            if (!encodedCode) return;
+            const encodedData = container.getAttribute('data-code');
+            const type = container.getAttribute('data-type') || 'dynamic';
+            if (!encodedData) return;
 
             try {
-                /** 
-                 * 1. DECODING THE LOGIC
-                 * Convert the Base64 string back into a functional JavaScript block.
-                 * Base64 is used to prevent the Markdown parser from mangling the code.
-                 */
-                const code = decodeURIComponent(escape(atob(encodedCode)));
+                const rawData = decodeURIComponent(escape(atob(encodedData)));
+                let setup: any;
 
-                /** 
-                 * 2. EXECUTING THE SETUP
-                 * Use 'new Function' to sandbox the setup logic. 
-                 * Expecting the markdown code block to 'return' an object with:
-                 * - parameters: { key: { label, value, min, max, step } }
-                 * - init: (params) => ChartConfig
-                 * - update: (chart, params) => void
-                 */
-                const setupFn = new Function(code);
-                const setup = setupFn();
+                if (type === 'blueprint') {
+                    setup = this.parsePlotBlueprint(rawData);
+                } else {
+                    const setupFn = new Function(rawData);
+                    setup = setupFn();
+                }
 
                 if (!setup || typeof setup !== 'object') {
                     throw new Error('Dynamic chart script must return an object structure.');
@@ -446,7 +438,7 @@ export class MarkdownViewer {
                         <canvas id="canvas-${container.id}"></canvas>
                     </div>
                     <div class="dynamic-chart-controls">
-                        <h4>Parameters</h4>
+                        <h4>${setup.title || 'Parameters'}</h4>
                         <div class="sliders-list"></div>
                     </div>
                 `;
@@ -498,10 +490,9 @@ export class MarkdownViewer {
                             // High-performance update (modifying existing chart data)
                             setup.update(chart, params);
                         } else {
-                            // Fallback: Full config refresh (easier for simple charts)
+                            // Standard blueprint auto-update
                             const newConfig = setup.init(params);
                             chart.data = newConfig.data;
-                            chart.options = newConfig.options;
                             chart.update('none'); // Update without flickering transition
                         }
                     });
@@ -540,14 +531,163 @@ export class MarkdownViewer {
                 observer.observe(document.body, { childList: true, subtree: true });
 
             } catch (err) {
-                console.error('Dynamic Chart Runtime Error:', err);
+                console.error('Plot Runtime Error:', err);
                 container.innerHTML = `
-                    <div class="dynamic-chart-error">
-                        <strong>Simulation Runtime Error</strong><br>
-                        ${(err as Error).message}
+                    <div class="dynamic-chart-error" style="background: rgba(255,50,50,0.1); border: 1px dashed rgba(255,50,50,0.3); border-radius: 12px; padding: 1.5rem; text-align: center; color: #ff5555; font-family: 'JetBrains Mono'; margin: 1rem 0;">
+                        <strong style="font-size: 1.1rem; display: block; margin-bottom: 0.5rem;">Simulation Error</strong>
+                        <span style="font-size: 0.9rem; opacity: 0.8;">${(err as Error).message}</span>
                     </div>
                 `;
             }
         });
+    }
+
+    /**
+     * Parses a YAML-like blueprint for a plot.
+     * Standardizes styling and automates math evaluation.
+     */
+    private parsePlotBlueprint(raw: string): any {
+        const lines = raw.split(/\r?\n/);
+        const config: any = { parameters: {}, vars: {}, axis: { x: {}, y: {} } };
+        let currentSection = '';
+
+        lines.forEach(line => {
+            const trimmed = line.trim();
+            if (!trimmed || trimmed.startsWith('#')) return;
+
+            // Detection: A line starting with non-whitespace is a NEW SECTION
+            const isSectionHeader = /^\S/.test(line);
+
+            if (trimmed.includes(':') && isSectionHeader) {
+                const [key, ...valParts] = trimmed.split(':');
+                const val = valParts.join(':').trim();
+                const cleanKey = key.trim().toLowerCase();
+
+                if (cleanKey === 'params' || cleanKey === 'parameters') {
+                    currentSection = 'params';
+                } else if (cleanKey === 'vars' || cleanKey === 'variables') {
+                    currentSection = 'vars';
+                } else if (cleanKey === 'axis') {
+                    currentSection = 'axis';
+                } else {
+                    currentSection = '';
+                    config[cleanKey] = val;
+                }
+            } else if (trimmed.includes(':')) {
+                // Nested item detection (params, vars, axis)
+                const colonIndex = line.indexOf(':');
+                const key = line.substring(0, colonIndex).trim();
+                const val = line.substring(colonIndex + 1).trim();
+                const objMatch = val.match(/\{(.*)\}/);
+
+                if (objMatch) {
+                    const props: any = {};
+                    objMatch[1].split(',').forEach(p => {
+                        const [propKey, propVal] = p.split(':').map(s => s.trim());
+                        if (propKey && propVal) {
+                            props[propKey] = propVal.replace(/['"]/g, '').trim();
+                            if (!isNaN(Number(props[propKey]))) props[propKey] = Number(props[propKey]);
+                        }
+                    });
+
+                    if (currentSection === 'params') config.parameters[key] = props;
+                    if (currentSection === 'axis' && (key === 'x' || key === 'y')) config.axis[key] = props;
+                } else if (currentSection === 'vars') {
+                    config.vars[key] = val;
+                }
+            }
+        });
+
+        // Set Defaults & Standard Styling Constants
+        const steps = parseInt(config.steps) || 500;
+        const equation = config.equation || '0';
+        const color = config.color || 'rgb(255, 149, 0)';
+
+        const STANDARD_OPTIONS = {
+            animation: false,
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: {
+                    type: 'linear',
+                    title: { display: true, text: config.axis.x.title || 'X', color: 'rgba(255,255,255,0.6)', font: { family: 'JetBrains Mono' } },
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: 'rgba(255,255,255,0.4)', font: { family: 'JetBrains Mono' } },
+                    min: !isNaN(parseFloat(config.axis.x.min)) ? parseFloat(config.axis.x.min) : undefined,
+                    max: !isNaN(parseFloat(config.axis.x.max)) ? parseFloat(config.axis.x.max) : undefined
+                },
+                y: {
+                    title: { display: true, text: config.axis.y.title || 'Y', color: 'rgba(255,255,255,0.6)', font: { family: 'JetBrains Mono' } },
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: 'rgba(255,255,255,0.4)', font: { family: 'JetBrains Mono' } },
+                    min: !isNaN(config.axis.y.min) ? config.axis.y.min : undefined,
+                    max: !isNaN(config.axis.y.max) ? config.axis.y.max : undefined
+                }
+            }
+        };
+
+        // Automated Logic Generators
+        config.init = (params: any) => {
+            const data: any[] = [];
+            const xMin = !isNaN(config.axis.x.min) ? config.axis.x.min : 0;
+            const xMax = !isNaN(config.axis.x.max) ? config.axis.x.max : 10;
+            const range = xMax - xMin;
+
+            // Math Sandbox
+            const math = {
+                sin: Math.sin, cos: Math.cos, tan: Math.tan,
+                exp: Math.exp, sqrt: Math.sqrt, pow: Math.pow,
+                abs: Math.abs, PI: Math.PI, E: Math.E
+            };
+
+            const paramKeys = Object.keys(params);
+            const paramValues = Object.values(params);
+            const mathKeys = Object.keys(math);
+            const mathValues = Object.values(math);
+
+            try {
+                // Build a bridge for intermediate variables (vars section)
+                let varLogic = '';
+                for (const vKey in config.vars) {
+                    varLogic += `const ${vKey} = ${config.vars[vKey]}; `;
+                }
+
+                // Create the evaluator function
+                // It receives 'x', then all parameters, then math functions
+                const evalFn = new Function('x', ...paramKeys, ...mathKeys, `
+                    ${varLogic}
+                    return ${equation};
+                `);
+
+                for (let i = 0; i <= steps; i++) {
+                    const x = xMin + (range * i) / steps;
+                    const y = evalFn(x, ...paramValues, ...mathValues);
+                    data.push({ x, y });
+                }
+            } catch (e) {
+                console.error('Math Eval Error:', e);
+                throw new Error(`Equation Error: ${e}`);
+            }
+
+            return {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: config.title || 'Plot',
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: color.replace('rgb', 'rgba').replace(')', ', 0.1)'),
+                        borderWidth: 3,
+                        pointRadius: 0,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: STANDARD_OPTIONS
+            };
+        };
+
+        return config;
     }
 }

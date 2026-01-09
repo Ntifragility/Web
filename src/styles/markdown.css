@@ -982,7 +982,7 @@ table.hljs-ln td {
 /* --- DYNAMIC PARAMETRIC CHARTS (SLIDERS) --- */
 .dynamic-chart-wrapper {
     display: grid;
-    grid-template-columns: 1fr 340px;
+    grid-template-columns: 1fr 220px;
     /* Wider control panel for labels */
     gap: 2.5rem;
     background: var(--card-bg, rgba(13, 17, 23, 0.4));
