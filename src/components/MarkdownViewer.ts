@@ -8,6 +8,9 @@
 import { markdownParsing } from '../services/MarkdownParsing';
 import 'highlightjs-line-numbers.js';
 import '../styles/markdown.css';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 export class MarkdownViewer {
     private container: HTMLElement;
@@ -68,6 +71,8 @@ export class MarkdownViewer {
             this.setupTocHighlighting();
             this.setupStickyHeader();
             this.setupMobileToggles();
+            this.renderCharts();
+            this.renderDynamicCharts();
 
         } catch (err: any) {
             console.error('Markdown Render Error:', err);
@@ -369,5 +374,180 @@ export class MarkdownViewer {
         });
         window.addEventListener('mousemove', (e: MouseEvent) => moveDrag(e.clientX));
         window.addEventListener('mouseup', endDrag);
+    }
+
+    /**
+     * Initializes any Chart.js charts found in the rendered markdown.
+     */
+    private renderCharts(): void {
+        const canvases = this.container.querySelectorAll('canvas[data-chart]');
+        canvases.forEach((canvas) => {
+            const ctx = (canvas as HTMLCanvasElement).getContext('2d');
+            const dataChart = canvas.getAttribute('data-chart');
+            if (ctx && dataChart) {
+                try {
+                    // Unescape JSON
+                    const configStr = dataChart.replace(/&quot;/g, '"');
+                    const config = JSON.parse(configStr);
+
+                    new Chart(ctx, config);
+                } catch (err) {
+                    console.error('Failed to render chart:', err);
+                    const errorMsg = document.createElement('div');
+                    errorMsg.style.color = 'red';
+                    errorMsg.textContent = `Chart Error: ${err}`;
+                    canvas.replaceWith(errorMsg);
+                }
+            }
+        });
+    }
+
+    /**
+     * Initializes Interactive Parametric Charts (Sliders) found in the rendered markdown.
+     * This method "hydrates" the static HTML placeholders with real-time logic.
+     */
+    private renderDynamicCharts(): void {
+        const containers = this.container.querySelectorAll('.dynamic-chart-wrapper');
+
+        containers.forEach((container) => {
+            // Retrieve the Base64 encoded JavaScript logic from the parser
+            const encodedCode = container.getAttribute('data-code');
+            if (!encodedCode) return;
+
+            try {
+                /** 
+                 * 1. DECODING THE LOGIC
+                 * Convert the Base64 string back into a functional JavaScript block.
+                 * Base64 is used to prevent the Markdown parser from mangling the code.
+                 */
+                const code = decodeURIComponent(escape(atob(encodedCode)));
+
+                /** 
+                 * 2. EXECUTING THE SETUP
+                 * Use 'new Function' to sandbox the setup logic. 
+                 * Expecting the markdown code block to 'return' an object with:
+                 * - parameters: { key: { label, value, min, max, step } }
+                 * - init: (params) => ChartConfig
+                 * - update: (chart, params) => void
+                 */
+                const setupFn = new Function(code);
+                const setup = setupFn();
+
+                if (!setup || typeof setup !== 'object') {
+                    throw new Error('Dynamic chart script must return an object structure.');
+                }
+
+                /** 
+                 * 3. BUILDING THE UI SCAFFOLDING
+                 * Construct the 2-column layout: Visual Chart on the left, Control Panel on the right.
+                 */
+                container.innerHTML = `
+                    <div class="dynamic-chart-canvas-container">
+                        <canvas id="canvas-${container.id}"></canvas>
+                    </div>
+                    <div class="dynamic-chart-controls">
+                        <h4>Parameters</h4>
+                        <div class="sliders-list"></div>
+                    </div>
+                `;
+
+                const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+                const slidersList = container.querySelector('.sliders-list') as HTMLElement;
+                const ctx = canvas.getContext('2d')!;
+
+                /** 
+                 * 4. MANAGING PARAMETER STATE
+                 * Extract initial values to create the current 'live' state object.
+                 */
+                const params: Record<string, number> = {};
+                for (const key in setup.parameters) {
+                    params[key] = setup.parameters[key].value;
+                }
+
+                /** 
+                 * 5. GENERATING SLIDERS (The Factory)
+                 * Loop through user-defined parameters to build interactive HTML sliders.
+                 */
+                for (const key in setup.parameters) {
+                    const p = setup.parameters[key];
+                    const sliderId = `slider-${container.id}-${key}`;
+                    const valueId = `value-${container.id}-${key}`;
+
+                    const sliderGroup = document.createElement('div');
+                    sliderGroup.className = 'dynamic-chart-slider-group';
+                    sliderGroup.innerHTML = `
+                        <div class="dynamic-chart-label-row">
+                            <span class="dynamic-chart-label">${p.label || key}</span>
+                            <span class="dynamic-chart-value" id="${valueId}">${p.value}</span>
+                        </div>
+                        <input type="range" class="dynamic-chart-slider" id="${sliderId}" 
+                            min="${p.min}" max="${p.max}" step="${p.step || 1}" value="${p.value}">
+                    `;
+
+                    const input = sliderGroup.querySelector('input')!;
+                    const valueSpan = sliderGroup.querySelector(`#${valueId}`)!;
+
+                    // WIRING: The event listener that bridges HTML controls and JS logic
+                    input.addEventListener('input', () => {
+                        const newVal = parseFloat(input.value);
+                        params[key] = newVal;
+                        valueSpan.textContent = newVal.toString();
+
+                        // Execute user-defined update logic
+                        if (setup.update) {
+                            // High-performance update (modifying existing chart data)
+                            setup.update(chart, params);
+                        } else {
+                            // Fallback: Full config refresh (easier for simple charts)
+                            const newConfig = setup.init(params);
+                            chart.data = newConfig.data;
+                            chart.options = newConfig.options;
+                            chart.update('none'); // Update without flickering transition
+                        }
+                    });
+
+                    slidersList.appendChild(sliderGroup);
+                }
+
+                /** 
+                 * 6. INITIALIZING CHART.JS
+                 * Build the initial chart instance using the user's 'init' logic.
+                 */
+                const chartConfig = setup.init(params);
+
+                // Ensure responsiveness is ON and animations are optimized for real-time dragging
+                if (chartConfig.options) {
+                    chartConfig.options.responsive = true;
+                    chartConfig.options.maintainAspectRatio = false;
+                }
+
+                const chart = new Chart(ctx, chartConfig);
+
+                /**
+                 * 7. WINDOW RESIZE HANDLING
+                 * Ensure the chart expands/shrinks if the user resizes their browser.
+                 */
+                const resizeHandler = () => chart.resize();
+                window.addEventListener('resize', resizeHandler);
+
+                // Cleanup: Stop observing if the container is removed (prevent memory leaks)
+                const observer = new MutationObserver(() => {
+                    if (!document.body.contains(container)) {
+                        window.removeEventListener('resize', resizeHandler);
+                        observer.disconnect();
+                    }
+                });
+                observer.observe(document.body, { childList: true, subtree: true });
+
+            } catch (err) {
+                console.error('Dynamic Chart Runtime Error:', err);
+                container.innerHTML = `
+                    <div class="dynamic-chart-error">
+                        <strong>Simulation Runtime Error</strong><br>
+                        ${(err as Error).message}
+                    </div>
+                `;
+            }
+        });
     }
 }

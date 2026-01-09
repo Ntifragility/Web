@@ -978,3 +978,189 @@ table.hljs-ln td {
         display: none !important;
     }
 }
+
+/* --- DYNAMIC PARAMETRIC CHARTS (SLIDERS) --- */
+.dynamic-chart-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    /* Wider control panel for labels */
+    gap: 2.5rem;
+    background: var(--card-bg, rgba(13, 17, 23, 0.4));
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+    border-radius: 20px;
+    padding: 2.5rem;
+    margin: 3.5rem 0;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(15px);
+    align-items: start;
+    transition: all 0.3s ease;
+
+    /* Critical Responsiveness Fixes */
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+    /* Prevent internal bleed */
+}
+
+.dynamic-chart-canvas-container {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 14px;
+    padding: 1.25rem;
+    min-height: 450px;
+    /* Taller on desktop */
+    height: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.dynamic-chart-canvas-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100%;
+}
+
+.dynamic-chart-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1.4rem;
+    background: rgba(0, 0, 0, 0.15);
+    padding: 1.75rem;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-sizing: border-box;
+    width: 100%;
+}
+
+.dynamic-chart-controls h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-secondary);
+    opacity: 0.6;
+    font-family: var(--font-heading);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 0.5rem;
+}
+
+.dynamic-chart-slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.dynamic-chart-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dynamic-chart-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    opacity: 0.9;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dynamic-chart-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #ff9500;
+    font-weight: 800;
+    background: rgba(255, 149, 0, 0.12);
+    padding: 3px 10px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(255, 149, 0, 0.05);
+    flex-shrink: 0;
+}
+
+/* Slider (Range) Styling */
+.dynamic-chart-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    /* Standard property for compatibility */
+    width: 100%;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 3px;
+    outline: none;
+    cursor: pointer;
+}
+
+.dynamic-chart-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ff9500;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(255, 149, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.2s;
+    border: 2px solid #1a1a1a;
+}
+
+.dynamic-chart-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.25);
+    background: #ffaa33;
+}
+
+/* Mobile adjustments (Break at 1024px for tablets) */
+@media (max-width: 1024px) {
+    .dynamic-chart-wrapper {
+        grid-template-columns: 100%;
+        /* Force full width on stack */
+        padding: 1rem;
+        /* More compact on mobile */
+        gap: 1rem;
+        margin: 2rem 0;
+        border-radius: 0;
+        /* Flush to edges on mobile sometimes looks better if container is tight */
+        width: 100% !important;
+    }
+
+    .dynamic-chart-controls {
+        order: 2;
+        /* Controls at bottom on mobile */
+        padding: 1rem;
+    }
+
+    .dynamic-chart-canvas-container {
+        order: 1;
+        min-height: 300px;
+        /* Reduced height for small screens */
+        padding: 0.5rem;
+    }
+
+    .dynamic-chart-label {
+        font-size: 0.7rem;
+    }
+}
+
+.dynamic-chart-loading {
+    padding: 3rem;
+    text-align: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    font-family: var(--font-heading);
+    opacity: 0.5;
+}
+
+.dynamic-chart-error {
+    color: #ff5555;
+    padding: 1.5rem;
+    border: 1px dashed rgba(255, 85, 85, 0.3);
+    background: rgba(255, 85, 85, 0.05);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-family: 'JetBrains Mono', monospace;
+    white-space: pre-wrap;
+    line-height: 1.5;
+}

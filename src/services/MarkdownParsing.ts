@@ -181,6 +181,30 @@ export class MarkdownParsing {
 
         renderer.code = (code, language) => {
             const validLang = language && hljs.getLanguage(language) ? language : 'plaintext';
+
+            // Chart.js Integration
+            if (language === 'chart' || language === 'chart:dynamic') {
+                const chartId = `chart-${Math.random().toString(36).substr(2, 9)}`;
+
+                if (language === 'chart:dynamic') {
+                    // For dynamic charts, we store the raw JS code in a base64 string
+                    const encodedCode = btoa(unescape(encodeURIComponent(code)));
+                    return `
+                        <div class="dynamic-chart-wrapper" id="${chartId}" data-code="${encodedCode}">
+                            <div class="dynamic-chart-loading">Initializing Interactive Plot...</div>
+                        </div>
+                    `;
+                }
+
+                // Static JSON chart
+                const safeConfig = code.replace(/"/g, '&quot;');
+                return `
+                    <div class="chart-container" style="position: relative; height:40vh; width:100%; margin: 2rem 0;">
+                        <canvas id="${chartId}" data-chart="${safeConfig}"></canvas>
+                    </div>
+                `;
+            }
+
             const highlighted = hljs.highlight(code, { language: validLang }).value;
 
             // Split into lines for numbering (trim to avoid empty rows at the bottom)
