@@ -84,3 +84,33 @@ axis:
   x: { title: "Time (s)", min: 0, max: 0.25 }
   y: { title: "DC Transient Current (A)", min: -35, max: 35 }
 ```
+
+SDB<SDFDFB
+
+
+
+UPÑUÑ
+
+## 3. Circle (Standard Verification)
+
+  
+
+$$x^2 + y^2 = 1.5^2$$
+
+  
+
+```blueprint:plot
+
+title: Perfect Circle
+
+equation: x**2 + y**2 = 1.5**2
+
+color: rgb(255, 80, 80)
+
+axis:
+
+  x: { title: "X", min: -2, max: 2 }
+
+  y: { title: "Y", min: -2, max: 2 }
+
+```

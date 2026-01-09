@@ -9,6 +9,15 @@
     "category": "General"
   },
   {
+    "id": "utils-implicit-test",
+    "title": "implicit-test",
+    "subtitle": "",
+    "date": "2026-01-09",
+    "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&q=80&w=600",
+    "markdownPath": "/vault/ready/utils/implicit-test.md",
+    "category": "utils"
+  },
+  {
     "id": "utils-chart-dynamic-test",
     "title": "Interactive Transient Current",
     "subtitle": "Testing Dynamic Chart.js with Sliders",
